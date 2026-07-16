@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "V6 Content Graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "graphId", "title", "sourceRef", "nodes", "edges"],
+  "properties": {
+    "version": { "const": "6.0-alpha.1" },
+    "graphId": { "type": "string", "minLength": 3 },
+    "title": { "type": "string", "minLength": 2 },
+    "subtitle": { "type": "string" },
+    "sourceRef": { "type": "string", "minLength": 3 },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "headline", "importance", "sourceQuote"],
+        "properties": {
+          "id": { "type": "string" },
+          "kind": { "enum": ["thesis", "context", "metric", "trend", "result", "capability", "stage", "action", "risk", "constraint", "evidence", "option", "criterion", "actor", "input", "output", "unresolved"] },
+          "headline": { "type": "string", "minLength": 1 },
+          "detail": { "type": "string" },
+          "importance": { "enum": ["critical", "high", "medium", "low"] },
+          "sourceQuote": { "type": "string", "minLength": 1 },
+          "group": { "type": "string" },
+          "actor": { "type": "string" },
+          "order": { "type": "number" },
+          "status": { "enum": ["neutral", "good", "warning", "risk", "pending"] },
+          "measure": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["display"],
+            "properties": {
+              "display": { "type": "string", "minLength": 1 },
+              "value": { "type": ["number", "string"] },
+              "unit": { "type": "string" },
+              "direction": { "enum": ["up", "down", "flat", "target", "range"] }
+            }
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "from", "to"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "enum": ["supports", "causes", "precedes", "produces", "depends-on", "belongs-to", "contrasts", "owned-by", "measures"] },
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "label": { "type": "string" }
+        }
+      }
+    }
+  }
+}
+

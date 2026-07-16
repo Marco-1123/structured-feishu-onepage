@@ -1,0 +1,16 @@
+{
+  "name": "structured-feishu-onepage",
+  "version": "6.0.0-alpha.1",
+  "private": false,
+  "type": "module",
+  "description": "Information-preserving OnePage compiler for editable Feishu whiteboards",
+  "license": "MIT",
+  "bin": {
+    "onepage-engine": "packages/onepage-engine/src/run.mjs"
+  },
+  "scripts": {
+    "test": "node --test packages/onepage-engine/test/*.test.mjs",
+    "demo": "node packages/onepage-engine/src/run.mjs --graph examples/audit-assistant/content-graph.json --output-dir runs/audit-assistant"
+  }
+}
+

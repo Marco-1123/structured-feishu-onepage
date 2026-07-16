@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "V6 Scene Spec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "sceneId", "archetype", "title", "thesisNodeId", "regions", "sourceNodeIds", "score"],
+  "properties": {
+    "version": { "const": "6.0-alpha.1" },
+    "sceneId": { "type": "string" },
+    "archetype": { "enum": ["review-dashboard", "capability-system", "process-system", "information-map"] },
+    "title": { "type": "string" },
+    "subtitle": { "type": "string" },
+    "thesisNodeId": { "type": "string" },
+    "style": { "enum": ["feishu-blue", "linear-system", "apple-report"] },
+    "score": { "type": "number" },
+    "reasons": { "type": "array", "items": { "type": "string" } },
+    "sourceNodeIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "regions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "role", "title", "nodeIds", "width", "layout"],
+        "properties": {
+          "id": { "type": "string" },
+          "role": { "enum": ["metrics", "capabilities", "process", "evidence", "actions", "risks", "context"] },
+          "title": { "type": "string" },
+          "nodeIds": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+          "width": { "enum": ["full", "half", "third", "two-thirds"] },
+          "layout": { "enum": ["grid", "horizontal", "vertical", "dagre-lr", "dagre-tb"] }
+        }
+      }
+    }
+  }
+}
+

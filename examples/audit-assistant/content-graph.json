@@ -1,0 +1,38 @@
+{
+  "version": "6.0-alpha.1",
+  "graphId": "audit-assistant-overview",
+  "title": "审核智能助手知识库概览",
+  "subtitle": "能力结果、运行链路与下一阶段治理",
+  "sourceRef": "examples/audit-assistant/source.md",
+  "nodes": [
+    { "id": "t1", "kind": "thesis", "headline": "把审核队列的数据分析、异常发现、配置查询和业务问答统一到对话入口。", "detail": "能力已经形成稳定闭环，下一阶段重点转向统一口径与持续复用。", "importance": "critical", "sourceQuote": "把审核队列的数据分析、异常发现、配置查询和业务问答统一到对话入口" },
+    { "id": "m1", "kind": "metric", "headline": "稳定覆盖能力", "detail": "已覆盖五类核心分析与问答场景", "importance": "high", "sourceQuote": "当前已稳定覆盖 5 个核心能力", "status": "good", "measure": { "display": "5 个", "value": 5, "unit": "个" } },
+    { "id": "m2", "kind": "metric", "headline": "人工分析节省", "detail": "每天减少重复分析投入", "importance": "high", "sourceQuote": "每日节省 3-4 小时人工分析时间", "status": "good", "measure": { "display": "3-4h / 天", "value": "3-4", "unit": "小时", "direction": "range" } },
+    { "id": "m3", "kind": "metric", "headline": "关键问题响应", "detail": "平均响应时间低于三十秒", "importance": "high", "sourceQuote": "关键问题平均响应时间低于 30 秒", "status": "good", "measure": { "display": "< 30s", "value": 30, "unit": "秒", "direction": "target" } },
+    { "id": "c1", "kind": "capability", "headline": "量级异常分析", "detail": "快速识别异常并定位原因", "importance": "high", "sourceQuote": "量级异常分析支持快速归因" },
+    { "id": "c2", "kind": "capability", "headline": "延时分析", "detail": "支持分钟级异常定位", "importance": "high", "sourceQuote": "延时分析支持分钟级定位" },
+    { "id": "c3", "kind": "capability", "headline": "RR 调整分析", "detail": "支持空间变化回溯", "importance": "medium", "sourceQuote": "RR 调整分析支持空间回溯" },
+    { "id": "c4", "kind": "capability", "headline": "任务池查询", "detail": "支持任务链路追踪", "importance": "medium", "sourceQuote": "任务池查询支持链路回溯" },
+    { "id": "c5", "kind": "capability", "headline": "知识库问答", "detail": "持续补齐业务口径", "importance": "medium", "sourceQuote": "知识库问答支持持续补齐" },
+    { "id": "e1", "kind": "evidence", "headline": "代码与配置规则", "detail": "已沉淀为稳定执行约束", "importance": "high", "sourceQuote": "代码与配置规则已沉淀为稳定执行约束" },
+    { "id": "e2", "kind": "evidence", "headline": "Skill 与 Wiki 分层", "detail": "分别承载执行规则和长期知识", "importance": "high", "sourceQuote": "Skill 与 Wiki 分层承载执行规则和长期知识" },
+    { "id": "e3", "kind": "evidence", "headline": "真实样本持续回归", "detail": "真实文档与业务问答用于验收", "importance": "medium", "sourceQuote": "真实文档与业务问答样本用于持续回归" },
+    { "id": "a1", "kind": "action", "headline": "统一关键指标口径", "detail": "建立指标字典与维护责任", "importance": "high", "sourceQuote": "统一关键指标口径" },
+    { "id": "a2", "kind": "action", "headline": "固定双周复盘节奏", "detail": "持续检查异常与能力质量", "importance": "high", "sourceQuote": "固定双周复盘节奏" },
+    { "id": "a3", "kind": "action", "headline": "沉淀高频复用模块", "detail": "把稳定能力封装成通用入口", "importance": "medium", "sourceQuote": "将高频能力沉淀为复用模块" },
+    { "id": "p1", "kind": "input", "headline": "任务触发", "detail": "用户从业务问题发起", "importance": "medium", "sourceQuote": "任务触发", "order": 1 },
+    { "id": "p2", "kind": "stage", "headline": "检索定位", "detail": "找到数据、规则和知识依据", "importance": "medium", "sourceQuote": "检索定位", "order": 2 },
+    { "id": "p3", "kind": "stage", "headline": "智能总结", "detail": "形成结构化判断与结论", "importance": "medium", "sourceQuote": "智能总结", "order": 3 },
+    { "id": "p4", "kind": "output", "headline": "规则复用", "detail": "将稳定结论沉淀到工作流", "importance": "medium", "sourceQuote": "规则复用", "order": 4 },
+    { "id": "r1", "kind": "risk", "headline": "权限边界需要持续维护", "detail": "新增能力必须通过真实材料和最终画板双重验证", "importance": "high", "sourceQuote": "团队还需要维护指标字典、版本变更记录、回归样本和权限边界", "status": "risk" }
+  ],
+  "edges": [
+    { "id": "edge-p1-p2", "type": "precedes", "from": "p1", "to": "p2" },
+    { "id": "edge-p2-p3", "type": "precedes", "from": "p2", "to": "p3" },
+    { "id": "edge-p3-p4", "type": "precedes", "from": "p3", "to": "p4" },
+    { "id": "edge-e1-t1", "type": "supports", "from": "e1", "to": "t1" },
+    { "id": "edge-e2-t1", "type": "supports", "from": "e2", "to": "t1" },
+    { "id": "edge-e3-t1", "type": "supports", "from": "e3", "to": "t1" }
+  ]
+}
+
