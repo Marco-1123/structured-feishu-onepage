@@ -100,10 +100,10 @@ function contentCard(node, variant = "default") {
   });
 }
 
-function processCard(node) {
+function processCard(node, width = 270) {
   return frame({
     id: `node-${node.id}`,
-    width: 270,
+    width,
     height: "fit-content(90)",
     layout: "vertical",
     gap: 6,
@@ -128,6 +128,7 @@ function regionBody(region, graph) {
     const edges = explicit.length
       ? explicit.map((edge) => [ `node-${edge.from}`, `node-${edge.to}`, edge.label || "" ])
       : ordered.slice(1).map((node, index) => [ `node-${ordered[index].id}`, `node-${node.id}` ]);
+    const cardWidth = ordered.length >= 6 ? 220 : ordered.length === 5 ? 245 : 270;
     return frame({
       id: `dagre-${region.id}`,
       layout: "dagre",
@@ -136,12 +137,12 @@ function regionBody(region, graph) {
       gap: 0,
       padding: 20,
       alignItems: "center",
-      layoutOptions: { rankdir: ordered.length > 5 ? "TB" : "LR", nodesep: 34, edgesep: 18, ranksep: 70, edges },
-      children: ordered.map(processCard)
+      layoutOptions: { rankdir: "LR", nodesep: 26, edgesep: 16, ranksep: ordered.length >= 6 ? 42 : 70, edges },
+      children: ordered.map((node) => processCard(node, cardWidth))
     });
   }
 
-  const maxColumns = region.role === "metrics" ? 3 : nodes.length >= 5 ? 3 : nodes.length >= 2 ? 2 : 1;
+  const maxColumns = region.layout === "vertical" ? 1 : region.role === "metrics" ? 3 : nodes.length >= 5 ? 3 : nodes.length >= 2 ? 2 : 1;
   const rows = balancedRows(nodes, maxColumns);
   return frame({
     layout: "vertical",
@@ -254,4 +255,3 @@ export function renderSceneToDsl(scene, graph) {
 }
 
 export { PAGE_WIDTH, INNER_WIDTH };
-

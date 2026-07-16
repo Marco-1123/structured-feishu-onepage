@@ -23,8 +23,9 @@ node packages/onepage-engine/src/run.mjs \
   --output-dir <run-directory>
 ```
 
-4. For Alpha validation, inspect the selected preview and manifest. Production delivery remains disabled while `maturity` is `prototype`.
-5. Use `lark-doc` to create a document and `lark-whiteboard` to write `whiteboard.json` as an editable board.
+4. The source material must be saved as a local snapshot referenced by `sourceRef`; invented or untraceable source quotes fail the run.
+5. For Alpha validation, inspect the selected preview and manifest. Production delivery remains disabled while `maturity` is `prototype`.
+6. Use `lark-doc` to create a document and `lark-whiteboard` to write `whiteboard.json` as an editable board.
 
 ## Boundaries
 
@@ -33,6 +34,7 @@ node packages/onepage-engine/src/run.mjs \
 - The native Feishu DSL owns Flex/Dagre sizing and connector routing.
 - The user is not asked to choose versions, renderers or templates.
 - V3-V5 runners and examples are not part of this repository and cannot be selected.
+- A result is not accepted unless important-content coverage is 100%, the OnePage aspect ratio is within the quality range, and native whiteboard checks report no overflow, overlap or occlusion.
 
 ## Alpha limitation
 

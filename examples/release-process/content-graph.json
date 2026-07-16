@@ -1,0 +1,35 @@
+{
+  "version": "6.0-alpha.1",
+  "graphId": "capability-release-process",
+  "title": "智能能力发布与复用流程",
+  "subtitle": "从业务需求到稳定复用的跨角色协作链路",
+  "sourceRef": "examples/release-process/source.md",
+  "nodes": [
+    { "id": "t1", "kind": "thesis", "headline": "通过明确责任、质量门槛和复用治理，把能力发布从一次性交付变成稳定闭环。", "importance": "critical", "sourceQuote": "新能力从业务需求进入后，依次经过需求澄清、数据与权限确认、小范围试点、质量验收、正式发布和复用沉淀" },
+    { "id": "p1", "kind": "input", "headline": "需求澄清", "detail": "产品负责人确认目标、范围与验收方式", "actor": "产品负责人", "importance": "high", "sourceQuote": "产品负责人负责需求澄清", "order": 1 },
+    { "id": "p2", "kind": "stage", "headline": "数据与权限确认", "detail": "数据负责人确认口径与访问边界", "actor": "数据负责人", "importance": "high", "sourceQuote": "数据负责人确认口径与权限", "order": 2 },
+    { "id": "p3", "kind": "stage", "headline": "小范围试点", "detail": "研发团队完成最小可用实现", "actor": "研发团队", "importance": "high", "sourceQuote": "研发团队完成试点实现", "order": 3 },
+    { "id": "p4", "kind": "stage", "headline": "质量验收", "detail": "业务负责人检查内容覆盖与可读性", "actor": "业务负责人", "importance": "high", "sourceQuote": "业务负责人参与质量验收", "order": 4 },
+    { "id": "p5", "kind": "stage", "headline": "正式发布", "detail": "平台团队执行发布检查", "actor": "平台团队", "importance": "medium", "sourceQuote": "平台团队负责发布", "order": 5 },
+    { "id": "p6", "kind": "output", "headline": "复用沉淀", "detail": "平台团队维护通用入口和版本", "actor": "平台团队", "importance": "medium", "sourceQuote": "平台团队负责发布和复用治理", "order": 6 },
+    { "id": "m1", "kind": "metric", "headline": "常规能力交付周期", "detail": "在质量门槛不降低的前提下", "importance": "high", "sourceQuote": "常规能力交付周期控制在两周内", "measure": { "display": "≤ 2 周", "value": 2, "unit": "周", "direction": "target" } },
+    { "id": "c1", "kind": "capability", "headline": "标准需求模板", "detail": "统一输入和验收字段", "importance": "medium", "sourceQuote": "标准需求模板" },
+    { "id": "c2", "kind": "capability", "headline": "统一回归样本", "detail": "固定关键质量案例", "importance": "medium", "sourceQuote": "统一回归样本" },
+    { "id": "c3", "kind": "capability", "headline": "发布检查清单", "detail": "控制发布前风险", "importance": "medium", "sourceQuote": "发布检查清单" },
+    { "id": "r1", "kind": "constraint", "headline": "试点前确认数据权限", "detail": "未经确认不得进入实现", "importance": "high", "sourceQuote": "数据权限必须在试点前确认", "status": "warning" },
+    { "id": "r2", "kind": "risk", "headline": "跨团队交接依赖人工提醒", "detail": "容易形成责任断点和延迟", "importance": "high", "sourceQuote": "跨团队责任交接仍依赖人工提醒", "status": "risk" },
+    { "id": "e1", "kind": "evidence", "headline": "双重质量验收", "detail": "同时检查内容覆盖和最终画板可读性", "importance": "high", "sourceQuote": "质量验收必须同时检查内容覆盖和最终画板可读性" },
+    { "id": "a1", "kind": "action", "headline": "固化责任通知", "detail": "关键交接自动通知对应责任人", "importance": "high", "sourceQuote": "固化责任通知" },
+    { "id": "a2", "kind": "action", "headline": "建立失败回退机制", "detail": "验收失败后回到对应阶段", "importance": "high", "sourceQuote": "建立失败回退机制" }
+  ],
+  "edges": [
+    { "id": "e-p1-p2", "type": "precedes", "from": "p1", "to": "p2" },
+    { "id": "e-p2-p3", "type": "precedes", "from": "p2", "to": "p3" },
+    { "id": "e-p3-p4", "type": "precedes", "from": "p3", "to": "p4" },
+    { "id": "e-p4-p5", "type": "precedes", "from": "p4", "to": "p5" },
+    { "id": "e-p5-p6", "type": "precedes", "from": "p5", "to": "p6" },
+    { "id": "e-r1-p3", "type": "depends-on", "from": "p3", "to": "r1" },
+    { "id": "e-e1-p5", "type": "depends-on", "from": "p5", "to": "e1" }
+  ]
+}
+

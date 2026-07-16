@@ -1,0 +1,31 @@
+{
+  "version": "6.0-alpha.1",
+  "graphId": "h1-review-h2-priorities",
+  "title": "2026 H1 经营复盘与 H2 重点",
+  "subtitle": "结果、变化依据、风险与下一阶段动作",
+  "sourceRef": "examples/h1-review/source.md",
+  "nodes": [
+    { "id": "t1", "kind": "thesis", "headline": "高价值场景策略已经验证有效，但规模化复用仍未形成稳定机制。", "detail": "H2 的重点不是继续堆项目，而是统一指标、责任和复盘节奏。", "importance": "critical", "sourceQuote": "结果说明高价值场景策略有效，但规模化复用仍未形成稳定机制" },
+    { "id": "m1", "kind": "metric", "headline": "核心目标完成率", "detail": "上半年总体目标进展", "importance": "high", "sourceQuote": "H1 核心业务目标完成率达到 78%", "status": "good", "measure": { "display": "78%", "value": 78, "unit": "%", "direction": "target" } },
+    { "id": "m2", "kind": "metric", "headline": "重点场景覆盖", "detail": "从 48% 提升到 64%", "importance": "high", "sourceQuote": "重点场景覆盖从 48% 提升到 64%", "status": "good", "measure": { "display": "48% → 64%", "value": 64, "unit": "%", "direction": "up" } },
+    { "id": "m3", "kind": "metric", "headline": "交付周期改善", "detail": "单次交付周期持续缩短", "importance": "high", "sourceQuote": "单次交付周期缩短 18%", "status": "good", "measure": { "display": "-18%", "value": -18, "unit": "%", "direction": "down" } },
+    { "id": "e1", "kind": "evidence", "headline": "连续五周核心指标改善", "detail": "改善并非单周偶发波动", "importance": "high", "sourceQuote": "连续五周核心指标改善" },
+    { "id": "e2", "kind": "evidence", "headline": "客户复购意愿提升", "detail": "重点场景价值获得客户确认", "importance": "high", "sourceQuote": "客户复购意愿提升" },
+    { "id": "e3", "kind": "evidence", "headline": "三类异常当周闭环", "detail": "运营机制开始形成", "importance": "medium", "sourceQuote": "三类异常能够在当周闭环" },
+    { "id": "s1", "kind": "stage", "headline": "重点场景验证", "detail": "完成重点客户场景验证", "importance": "medium", "sourceQuote": "完成重点客户场景验证", "order": 1 },
+    { "id": "s2", "kind": "stage", "headline": "双周复盘", "detail": "建立固定复盘机制", "importance": "medium", "sourceQuote": "建立双周复盘机制", "order": 2 },
+    { "id": "s3", "kind": "stage", "headline": "统一交付清单", "detail": "形成标准化交付约束", "importance": "medium", "sourceQuote": "形成统一交付清单", "order": 3 },
+    { "id": "r1", "kind": "risk", "headline": "跨团队指标口径不一致", "detail": "相同结果难以横向比较", "importance": "high", "sourceQuote": "指标口径在不同团队之间不完全一致", "status": "risk" },
+    { "id": "r2", "kind": "constraint", "headline": "复用模块责任边界未固化", "detail": "规模化推广缺少明确责任人", "importance": "high", "sourceQuote": "复用模块的责任边界尚未固化", "status": "warning" },
+    { "id": "a1", "kind": "action", "headline": "统一指标字典和责任人", "detail": "先解决口径与治理基础", "importance": "high", "sourceQuote": "统一指标字典和责任人" },
+    { "id": "a2", "kind": "action", "headline": "验证两个高价值场景", "detail": "完成规模化复制验证", "importance": "high", "sourceQuote": "完成两个高价值场景的规模化验证" },
+    { "id": "a3", "kind": "action", "headline": "标准化双周复盘", "detail": "沉淀为统一运营机制", "importance": "medium", "sourceQuote": "将双周复盘沉淀为标准运营机制" }
+  ],
+  "edges": [
+    { "id": "e-s1-s2", "type": "precedes", "from": "s1", "to": "s2" },
+    { "id": "e-s2-s3", "type": "precedes", "from": "s2", "to": "s3" },
+    { "id": "e-e1-t1", "type": "supports", "from": "e1", "to": "t1" },
+    { "id": "e-e2-t1", "type": "supports", "from": "e2", "to": "t1" }
+  ]
+}
+

@@ -5,6 +5,13 @@ import { spawnSync } from "node:child_process";
 import { planScenes } from "./scene-planner.mjs";
 import { renderSceneToDsl } from "./dsl-renderer.mjs";
 import { validateContentGraph, validateScene } from "./validate.mjs";
+import {
+  buildCoverage,
+  runWhiteboardCheck,
+  validatePreview,
+  validateSemanticComposition,
+  validateSourceGrounding
+} from "./quality-gate.mjs";
 
 const args = process.argv.slice(2);
 const value = (name) => {
@@ -24,7 +31,7 @@ const out = path.resolve(outputDir);
 const candidateDir = path.join(out, "candidates");
 fs.mkdirSync(candidateDir, { recursive: true });
 const graph = JSON.parse(fs.readFileSync(graphPath, "utf8"));
-const graphIssues = validateContentGraph(graph);
+const graphIssues = [...validateContentGraph(graph), ...validateSourceGrounding(graph)];
 if (graphIssues.length) throw new Error(graphIssues.join("\n"));
 
 const writeJson = (file, data) => fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
@@ -56,7 +63,17 @@ for (const scene of candidates) {
       if (render.status !== 0) record.issues.push((render.stderr || render.stdout || "whiteboard render failed").trim());
       else {
         record.outputs.preview = previewPath;
-        record.status = "rendered";
+        const previewGate = validatePreview(previewPath);
+        const whiteboardGate = runWhiteboardCheck(dslPath);
+        const semanticGate = validateSemanticComposition(scene, graph);
+        record.quality = {
+          preview: previewGate.metrics,
+          whiteboard: whiteboardGate.metrics,
+          semantics: semanticGate.metrics,
+          coverage: buildCoverage(scene, graph)
+        };
+        record.issues.push(...previewGate.issues, ...whiteboardGate.issues, ...semanticGate.issues);
+        record.status = record.issues.length ? "rejected" : "rendered";
       }
     } else record.status = "compiled";
   }
@@ -73,6 +90,7 @@ if (!accepted.length) {
 
 const selected = accepted[0];
 manifest.selection = { id: selected.id, archetype: selected.archetype, score: selected.semanticScore };
+manifest.quality = { passed: true, ...selected.quality };
 for (const [name, source] of Object.entries(selected.outputs)) {
   const extension = path.extname(source);
   const target = path.join(out, name === "whiteboard" ? "whiteboard.json" : name === "preview" ? "whiteboard.png" : `scene${extension}`);
@@ -83,4 +101,3 @@ manifest.status = "passed";
 manifest.finishedAt = new Date().toISOString();
 writeJson(path.join(out, "manifest.json"), manifest);
 console.log(`ok: V6 ${selected.archetype} -> ${out}`);
-
