@@ -1,0 +1,57 @@
+{
+  "version": "6.0-alpha.2",
+  "protocol": "evidence-ledger-v1",
+  "sourceRef": "examples/project-plan/source.md",
+  "sourceSha256": "0fea2e594f6aabe58fc558e8532a132d770089a870fcedf0b8e9aadf6efdfc61",
+  "title": "智能运营平台三阶段实施计划",
+  "units": [
+    {
+      "id": "U01",
+      "text": "项目目标是在一个季度内完成核心场景上线、运营闭环验证和规模化推广。整体分为需求与数据准备、试点上线、规模推广三个阶段，每个阶段均设置明确的验收门槛。",
+      "hash": "1fddf18203f900a7",
+      "signals": [
+        "numeric",
+        "action",
+        "process",
+        "evidence"
+      ],
+      "protected": true
+    },
+    {
+      "id": "U02",
+      "text": "第一阶段由产品和数据团队完成需求清单、指标口径、权限范围与验收样本，里程碑是需求基线通过评审。第二阶段由研发和运营团队上线三个核心场景，连续两周完成真实业务回归，里程碑是试点指标达到上线门槛。第三阶段由平台团队完成通用配置、培训和发布清单，里程碑是业务团队能够独立复用。",
+      "hash": "e42cd7adba7d9fd0",
+      "signals": [
+        "numeric",
+        "action",
+        "process",
+        "evidence"
+      ],
+      "protected": true
+    },
+    {
+      "id": "U03",
+      "text": "项目依赖数据权限按时开通、业务负责人持续参与验收，以及平台团队提供统一发布窗口。当前最大风险是跨团队决策周期过长，可能影响第二阶段上线时间。",
+      "hash": "b6e05610947464cc",
+      "signals": [
+        "numeric",
+        "risk",
+        "action",
+        "process"
+      ],
+      "protected": true
+    },
+    {
+      "id": "U04",
+      "text": "本周需要确认各阶段负责人、冻结第一阶段需求范围，并建立每周里程碑检查机制。若试点指标未达到门槛，项目应回到第二阶段继续验证，而不是直接进入规模推广。",
+      "hash": "2e29316d4e3b4505",
+      "signals": [
+        "numeric",
+        "action",
+        "process",
+        "evidence"
+      ],
+      "protected": true
+    }
+  ]
+}

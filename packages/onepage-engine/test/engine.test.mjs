@@ -7,6 +7,7 @@ import { validateContentGraph, validateScene } from "../src/validate.mjs";
 import { planScenes } from "../src/scene-planner.mjs";
 import { renderSceneToDsl } from "../src/dsl-renderer.mjs";
 import { buildCoverage, validateSemanticComposition, validateSourceGrounding } from "../src/quality-gate.mjs";
+import { buildDraftTemplate, buildExtractionPacket, sealDraft, verifySealedGraph } from "../src/extraction.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const graph = JSON.parse(fs.readFileSync(path.join(root, "examples/audit-assistant/content-graph.json"), "utf8"));
@@ -16,7 +17,18 @@ const processGraph = JSON.parse(fs.readFileSync(path.join(root, "examples/releas
 test("content graph is source-grounded and valid", () => {
   assert.deepEqual(validateContentGraph(graph), []);
   assert.deepEqual(validateSourceGrounding(graph, root), []);
+  assert.deepEqual(verifySealedGraph(graph, root), []);
   assert.ok(graph.nodes.every((node) => node.sourceQuote));
+});
+
+test("evidence ledger blocks unreviewed and protected source loss", () => {
+  const sourceRef = "examples/audit-assistant/source.md";
+  const packet = buildExtractionPacket(fs.readFileSync(path.join(root, sourceRef), "utf8"), sourceRef);
+  const template = buildDraftTemplate(packet, "negative-test");
+  assert.match(sealDraft(packet, template).issues.join("\n"), /has not been reviewed/);
+  const dropped = structuredClone(template);
+  dropped.sourceDecisions = packet.units.map((unit) => ({ unitId: unit.id, decision: "drop", nodeIds: [], reason: "重复信息可以删除" }));
+  assert.match(sealDraft(packet, dropped).issues.join("\n"), /protected information and cannot be dropped/);
 });
 
 test("planner produces distinct semantic candidates and selects capability system", () => {
@@ -53,4 +65,21 @@ test("different source structures select different scene archetypes", () => {
   const processDsl = JSON.stringify(renderSceneToDsl(planScenes(processGraph)[0], processGraph));
   assert.match(processDsl, /"rankdir":"LR"/);
   assert.doesNotMatch(processDsl, /"rankdir":"TB"/);
+});
+
+test("six-source blind corpus is sealed and semantically routed", () => {
+  const expected = {
+    "audit-assistant": "capability-system",
+    "h1-review": "review-dashboard",
+    "release-process": "process-system",
+    "strategy-proposal": "process-system",
+    "decision-comparison": "information-map",
+    "project-plan": "process-system"
+  };
+  for (const [name, archetype] of Object.entries(expected)) {
+    const item = JSON.parse(fs.readFileSync(path.join(root, "examples", name, "content-graph.json"), "utf8"));
+    assert.deepEqual(validateContentGraph(item), [], name);
+    assert.deepEqual(verifySealedGraph(item, root), [], name);
+    assert.equal(planScenes(item)[0].archetype, archetype, name);
+  }
 });

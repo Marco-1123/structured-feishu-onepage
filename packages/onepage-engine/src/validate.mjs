@@ -2,7 +2,7 @@ const REQUIRED_IMPORTANCE = new Set(["critical", "high", "medium"]);
 
 export function validateContentGraph(graph) {
   const issues = [];
-  if (graph?.version !== "6.0-alpha.1") issues.push("content graph version must be 6.0-alpha.1");
+  if (graph?.version !== "6.0-alpha.2") issues.push("content graph version must be 6.0-alpha.2");
   if (!graph?.graphId || !graph?.title || !graph?.sourceRef) issues.push("graphId, title and sourceRef are required");
   if (!Array.isArray(graph?.nodes) || !graph.nodes.length) issues.push("content graph requires nodes");
   if (!Array.isArray(graph?.edges)) issues.push("content graph requires an edges array");
@@ -11,7 +11,7 @@ export function validateContentGraph(graph) {
   for (const node of graph?.nodes || []) {
     if (!node.id || ids.has(node.id)) issues.push(`duplicate or missing node id: ${node.id || "<missing>"}`);
     ids.add(node.id);
-    if (!node.kind || !node.headline || !node.importance || !node.sourceQuote) issues.push(`node ${node.id || "<missing>"} lacks semantic or source fields`);
+    if (!node.kind || !node.headline || !node.importance || !node.sourceQuote || !node.sourceUnitIds?.length) issues.push(`node ${node.id || "<missing>"} lacks semantic or source fields`);
   }
   for (const edge of graph?.edges || []) {
     if (!ids.has(edge.from) || !ids.has(edge.to)) issues.push(`edge ${edge.id || "<missing>"} references an unknown node`);
@@ -33,4 +33,3 @@ export function validateScene(scene, graph) {
   if (missing.length) issues.push(`scene drops important nodes: ${missing.map((node) => node.id).join(", ")}`);
   return issues;
 }
-

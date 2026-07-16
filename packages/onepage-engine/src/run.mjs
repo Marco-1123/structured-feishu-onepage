@@ -5,6 +5,7 @@ import { spawnSync } from "node:child_process";
 import { planScenes } from "./scene-planner.mjs";
 import { renderSceneToDsl } from "./dsl-renderer.mjs";
 import { validateContentGraph, validateScene } from "./validate.mjs";
+import { verifySealedGraph } from "./extraction.mjs";
 import {
   buildCoverage,
   runWhiteboardCheck,
@@ -31,13 +32,13 @@ const out = path.resolve(outputDir);
 const candidateDir = path.join(out, "candidates");
 fs.mkdirSync(candidateDir, { recursive: true });
 const graph = JSON.parse(fs.readFileSync(graphPath, "utf8"));
-const graphIssues = [...validateContentGraph(graph), ...validateSourceGrounding(graph)];
+const graphIssues = [...validateContentGraph(graph), ...verifySealedGraph(graph), ...validateSourceGrounding(graph)];
 if (graphIssues.length) throw new Error(graphIssues.join("\n"));
 
 const writeJson = (file, data) => fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
 const candidates = planScenes(graph);
 const manifest = {
-  version: "6.0.0-alpha.1",
+  version: "6.0.0-alpha.2",
   pipeline: "onepage-engine-v6",
   maturity: "prototype",
   status: "running",
@@ -80,12 +81,16 @@ for (const scene of candidates) {
   manifest.candidates.push(record);
 }
 
-const accepted = manifest.candidates.filter((candidate) => ["rendered", "compiled"].includes(candidate.status) && !candidate.issues.length).sort((a, b) => b.semanticScore - a.semanticScore);
+const topSemanticScore = Math.max(...manifest.candidates.map((candidate) => candidate.semanticScore));
+const accepted = manifest.candidates
+  .filter((candidate) => ["rendered", "compiled"].includes(candidate.status) && !candidate.issues.length)
+  .filter((candidate) => candidate.semanticScore >= topSemanticScore - 8)
+  .sort((a, b) => b.semanticScore - a.semanticScore);
 if (!accepted.length) {
   manifest.status = "failed";
   manifest.finishedAt = new Date().toISOString();
   writeJson(path.join(out, "manifest.json"), manifest);
-  throw new Error("all V6 scene candidates failed");
+  throw new Error("no geometrically valid candidate remains within the semantic selection band");
 }
 
 const selected = accepted[0];

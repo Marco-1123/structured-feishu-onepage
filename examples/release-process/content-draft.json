@@ -1,5 +1,5 @@
 {
-  "version": "6.0-alpha.2",
+  "version": "6.0-alpha.2-draft",
   "graphId": "capability-release-process",
   "title": "智能能力发布与复用流程",
   "subtitle": "从业务需求到稳定复用的跨角色协作链路",
@@ -283,11 +283,5 @@
       ],
       "reason": "保留原文中的有效信息"
     }
-  ],
-  "extraction": {
-    "protocol": "evidence-ledger-v1",
-    "sourceSha256": "e63db35366d071619000d6691df15e2519b641d5a70daba19a87048165f0f642",
-    "sourceUnitCount": 3,
-    "sealedAt": "2026-07-16T18:53:43.465Z"
-  }
+  ]
 }

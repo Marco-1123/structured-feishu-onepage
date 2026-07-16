@@ -1,5 +1,5 @@
 {
-  "version": "6.0-alpha.2",
+  "version": "6.0-alpha.2-draft",
   "graphId": "h1-review-h2-priorities",
   "title": "2026 H1 经营复盘与 H2 重点",
   "subtitle": "结果、变化依据、风险与下一阶段动作",
@@ -260,11 +260,5 @@
       ],
       "reason": "保留原文中的有效信息"
     }
-  ],
-  "extraction": {
-    "protocol": "evidence-ledger-v1",
-    "sourceSha256": "b91f928655a74d49540e69edfa83d4501080d09a198825cc29ffceedf5d28d1b",
-    "sourceUnitCount": 3,
-    "sealedAt": "2026-07-16T18:54:33.255Z"
-  }
+  ]
 }

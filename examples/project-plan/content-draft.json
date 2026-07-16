@@ -1,0 +1,236 @@
+{
+  "version": "6.0-alpha.2-draft",
+  "graphId": "intelligent-ops-project-plan",
+  "title": "智能运营平台三阶段实施计划",
+  "subtitle": "一个季度内完成试点闭环与规模推广",
+  "sourceRef": "examples/project-plan/source.md",
+  "sourceDecisions": [
+    {
+      "unitId": "U01",
+      "decision": "preserve",
+      "nodeIds": [
+        "t1"
+      ],
+      "reason": "保留原文中的有效信息"
+    },
+    {
+      "unitId": "U02",
+      "decision": "preserve",
+      "nodeIds": [
+        "s1",
+        "s2",
+        "s3",
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "reason": "保留原文中的有效信息"
+    },
+    {
+      "unitId": "U03",
+      "decision": "preserve",
+      "nodeIds": [
+        "r1",
+        "r2",
+        "r3",
+        "r4"
+      ],
+      "reason": "保留原文中的有效信息"
+    },
+    {
+      "unitId": "U04",
+      "decision": "preserve",
+      "nodeIds": [
+        "a1",
+        "a2",
+        "a3",
+        "r5"
+      ],
+      "reason": "保留原文中的有效信息"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "t1",
+      "kind": "thesis",
+      "headline": "以三阶段和明确验收门槛推进智能运营平台。",
+      "detail": "一个季度内完成核心场景、闭环验证与规模推广。",
+      "importance": "critical",
+      "sourceQuote": "项目目标是在一个季度内完成核心场景上线、运营闭环验证和规模化推广。",
+      "sourceUnitIds": [
+        "U01"
+      ]
+    },
+    {
+      "id": "s1",
+      "kind": "stage",
+      "headline": "需求与数据准备",
+      "detail": "完成需求、口径、权限和验收样本。",
+      "importance": "high",
+      "sourceQuote": "第一阶段由产品和数据团队完成需求清单、指标口径、权限范围与验收样本",
+      "sourceUnitIds": [
+        "U02"
+      ],
+      "order": 1
+    },
+    {
+      "id": "s2",
+      "kind": "stage",
+      "headline": "试点上线",
+      "detail": "上线三个核心场景并连续两周真实回归。",
+      "importance": "high",
+      "sourceQuote": "第二阶段由研发和运营团队上线三个核心场景，连续两周完成真实业务回归",
+      "sourceUnitIds": [
+        "U02"
+      ],
+      "order": 2
+    },
+    {
+      "id": "s3",
+      "kind": "stage",
+      "headline": "规模推广",
+      "detail": "完成通用配置、培训和发布清单。",
+      "importance": "high",
+      "sourceQuote": "第三阶段由平台团队完成通用配置、培训和发布清单",
+      "sourceUnitIds": [
+        "U02"
+      ],
+      "order": 3
+    },
+    {
+      "id": "e1",
+      "kind": "evidence",
+      "headline": "需求基线通过评审",
+      "detail": "第一阶段里程碑。",
+      "importance": "medium",
+      "sourceQuote": "里程碑是需求基线通过评审",
+      "sourceUnitIds": [
+        "U02"
+      ]
+    },
+    {
+      "id": "e2",
+      "kind": "evidence",
+      "headline": "试点指标达到上线门槛",
+      "detail": "第二阶段里程碑。",
+      "importance": "medium",
+      "sourceQuote": "里程碑是试点指标达到上线门槛",
+      "sourceUnitIds": [
+        "U02"
+      ]
+    },
+    {
+      "id": "e3",
+      "kind": "evidence",
+      "headline": "业务团队能够独立复用",
+      "detail": "第三阶段里程碑。",
+      "importance": "medium",
+      "sourceQuote": "里程碑是业务团队能够独立复用",
+      "sourceUnitIds": [
+        "U02"
+      ]
+    },
+    {
+      "id": "r1",
+      "kind": "constraint",
+      "headline": "数据权限按时开通",
+      "detail": "试点启动的前置依赖。",
+      "importance": "high",
+      "sourceQuote": "项目依赖数据权限按时开通",
+      "sourceUnitIds": [
+        "U03"
+      ]
+    },
+    {
+      "id": "r2",
+      "kind": "constraint",
+      "headline": "业务负责人持续参与验收",
+      "detail": "避免验收脱离真实业务。",
+      "importance": "high",
+      "sourceQuote": "业务负责人持续参与验收",
+      "sourceUnitIds": [
+        "U03"
+      ]
+    },
+    {
+      "id": "r3",
+      "kind": "constraint",
+      "headline": "统一发布窗口",
+      "detail": "由平台团队提供。",
+      "importance": "medium",
+      "sourceQuote": "平台团队提供统一发布窗口",
+      "sourceUnitIds": [
+        "U03"
+      ]
+    },
+    {
+      "id": "r4",
+      "kind": "risk",
+      "headline": "跨团队决策周期过长",
+      "detail": "可能影响第二阶段上线时间。",
+      "importance": "high",
+      "sourceQuote": "跨团队决策周期过长，可能影响第二阶段上线时间。",
+      "sourceUnitIds": [
+        "U03"
+      ]
+    },
+    {
+      "id": "a1",
+      "kind": "action",
+      "headline": "确认各阶段负责人",
+      "detail": "本周完成责任对齐。",
+      "importance": "high",
+      "sourceQuote": "确认各阶段负责人",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    },
+    {
+      "id": "a2",
+      "kind": "action",
+      "headline": "冻结第一阶段需求范围",
+      "detail": "控制范围变化。",
+      "importance": "high",
+      "sourceQuote": "冻结第一阶段需求范围",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    },
+    {
+      "id": "a3",
+      "kind": "action",
+      "headline": "建立每周里程碑检查",
+      "detail": "持续检查阶段进展。",
+      "importance": "high",
+      "sourceQuote": "建立每周里程碑检查机制",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    },
+    {
+      "id": "r5",
+      "kind": "constraint",
+      "headline": "未达门槛返回试点阶段",
+      "detail": "禁止直接进入规模推广。",
+      "importance": "high",
+      "sourceQuote": "若试点指标未达到门槛，项目应回到第二阶段继续验证，而不是直接进入规模推广。",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-s1-s2",
+      "type": "precedes",
+      "from": "s1",
+      "to": "s2"
+    },
+    {
+      "id": "e-s2-s3",
+      "type": "precedes",
+      "from": "s2",
+      "to": "s3"
+    }
+  ]
+}

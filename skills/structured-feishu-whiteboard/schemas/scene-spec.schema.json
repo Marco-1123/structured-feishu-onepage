@@ -5,7 +5,7 @@
   "additionalProperties": false,
   "required": ["version", "sceneId", "archetype", "title", "thesisNodeId", "regions", "sourceNodeIds", "score"],
   "properties": {
-    "version": { "const": "6.0-alpha.1" },
+    "version": { "const": "6.0-alpha.2" },
     "sceneId": { "type": "string" },
     "archetype": { "enum": ["review-dashboard", "capability-system", "process-system", "information-map"] },
     "title": { "type": "string" },
@@ -33,4 +33,3 @@
     }
   }
 }
-

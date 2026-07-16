@@ -1,0 +1,226 @@
+{
+  "version": "6.0-alpha.2",
+  "graphId": "knowledge-carrier-decision",
+  "title": "团队知识承载方案选型",
+  "subtitle": "按稳定性、可读性和协作成本进行分层",
+  "sourceRef": "examples/decision-comparison/source.md",
+  "sourceDecisions": [
+    {
+      "unitId": "U01",
+      "decision": "preserve",
+      "nodeIds": [
+        "t1",
+        "c1"
+      ],
+      "reason": "保留原文中的有效信息"
+    },
+    {
+      "unitId": "U02",
+      "decision": "preserve",
+      "nodeIds": [
+        "o1",
+        "o2",
+        "o3",
+        "o4"
+      ],
+      "reason": "保留原文中的有效信息"
+    },
+    {
+      "unitId": "U03",
+      "decision": "preserve",
+      "nodeIds": [
+        "cr1",
+        "cr2",
+        "cr3",
+        "cr4",
+        "a1"
+      ],
+      "reason": "保留原文中的有效信息"
+    },
+    {
+      "unitId": "U04",
+      "decision": "preserve",
+      "nodeIds": [
+        "r1",
+        "r2",
+        "a2",
+        "a3"
+      ],
+      "reason": "保留原文中的有效信息"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "t1",
+      "kind": "thesis",
+      "headline": "知识承载应采用分层方案，而不是强求单一工具覆盖全部需求。",
+      "detail": "Wiki、Skill、飞书文档和聊天记录承担不同职责。",
+      "importance": "critical",
+      "sourceQuote": "单一工具难以兼顾所有目标，因此需要明确不同载体的职责边界。",
+      "sourceUnitIds": [
+        "U01"
+      ]
+    },
+    {
+      "id": "c1",
+      "kind": "context",
+      "headline": "四类核心需求",
+      "detail": "长期沉淀、Agent 可读、执行稳定和对外展示。",
+      "importance": "high",
+      "sourceQuote": "长期知识沉淀、Agent 可读、执行规则稳定和对外展示四类需求",
+      "sourceUnitIds": [
+        "U01"
+      ]
+    },
+    {
+      "id": "o1",
+      "kind": "option",
+      "headline": "LLM Wiki",
+      "detail": "保存长期判断、背景和决策依据。",
+      "importance": "high",
+      "sourceQuote": "LLM Wiki 适合保存长期判断、背景和决策依据，可被 Agent 持续读取",
+      "sourceUnitIds": [
+        "U02"
+      ]
+    },
+    {
+      "id": "o2",
+      "kind": "option",
+      "headline": "Skill",
+      "detail": "封装稳定执行规则和工具链。",
+      "importance": "high",
+      "sourceQuote": "Skill 适合封装稳定执行规则和工具链",
+      "sourceUnitIds": [
+        "U02"
+      ]
+    },
+    {
+      "id": "o3",
+      "kind": "option",
+      "headline": "飞书文档",
+      "detail": "服务人工阅读、评审和案例展示。",
+      "importance": "medium",
+      "sourceQuote": "飞书文档适合人工阅读、评审和案例展示",
+      "sourceUnitIds": [
+        "U02"
+      ]
+    },
+    {
+      "id": "o4",
+      "kind": "option",
+      "headline": "聊天记录",
+      "detail": "只适合临时回看。",
+      "importance": "medium",
+      "sourceQuote": "聊天记录只适合临时回看，不应作为正式知识底座。",
+      "sourceUnitIds": [
+        "U02"
+      ]
+    },
+    {
+      "id": "cr1",
+      "kind": "criterion",
+      "headline": "沉淀能力",
+      "detail": "判断长期知识保真程度。",
+      "importance": "medium",
+      "sourceQuote": "沉淀能力",
+      "sourceUnitIds": [
+        "U03"
+      ]
+    },
+    {
+      "id": "cr2",
+      "kind": "criterion",
+      "headline": "Agent 可读性",
+      "detail": "判断机器持续读取能力。",
+      "importance": "medium",
+      "sourceQuote": "Agent 可读性",
+      "sourceUnitIds": [
+        "U03"
+      ]
+    },
+    {
+      "id": "cr3",
+      "kind": "criterion",
+      "headline": "协作成本",
+      "detail": "判断维护和更新负担。",
+      "importance": "medium",
+      "sourceQuote": "协作成本",
+      "sourceUnitIds": [
+        "U03"
+      ]
+    },
+    {
+      "id": "cr4",
+      "kind": "criterion",
+      "headline": "展示效果",
+      "detail": "判断人工评审与传播体验。",
+      "importance": "medium",
+      "sourceQuote": "展示效果",
+      "sourceUnitIds": [
+        "U03"
+      ]
+    },
+    {
+      "id": "a1",
+      "kind": "action",
+      "headline": "采用 Wiki、Skill、飞书文档分层",
+      "detail": "聊天记录不进入正式沉淀。",
+      "importance": "high",
+      "sourceQuote": "Wiki 保存长期知识，Skill 承载执行约束，飞书文档展示结果，聊天记录不进入正式沉淀。",
+      "sourceUnitIds": [
+        "U03"
+      ]
+    },
+    {
+      "id": "r1",
+      "kind": "risk",
+      "headline": "知识与规则混写",
+      "detail": "混写后难以维护。",
+      "importance": "high",
+      "sourceQuote": "知识与规则混写后难以维护",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    },
+    {
+      "id": "r2",
+      "kind": "risk",
+      "headline": "多个入口缺少统一索引",
+      "detail": "读者难以找到唯一入口。",
+      "importance": "high",
+      "sourceQuote": "多个入口缺少统一索引",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    },
+    {
+      "id": "a2",
+      "kind": "action",
+      "headline": "建立统一目录",
+      "detail": "连接各类知识载体。",
+      "importance": "high",
+      "sourceQuote": "建立统一目录",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    },
+    {
+      "id": "a3",
+      "kind": "action",
+      "headline": "定义更新责任",
+      "detail": "明确各载体维护边界。",
+      "importance": "high",
+      "sourceQuote": "为 Wiki、Skill 和飞书文档定义明确的更新责任。",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    }
+  ],
+  "edges": [],
+  "extraction": {
+    "protocol": "evidence-ledger-v1",
+    "sourceSha256": "1ff44f766abdb08efe79552e76de23a259b9ec6e6775143543fbfcf7ca5096d2",
+    "sourceUnitCount": 4,
+    "sealedAt": "2026-07-16T18:56:29.948Z"
+  }
+}

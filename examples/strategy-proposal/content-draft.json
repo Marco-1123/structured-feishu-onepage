@@ -1,0 +1,212 @@
+{
+  "version": "6.0-alpha.2-draft",
+  "graphId": "regional-growth-strategy",
+  "title": "区域增长策略建议",
+  "subtitle": "从样板验证到区域复制的增长路径",
+  "sourceRef": "examples/strategy-proposal/source.md",
+  "sourceDecisions": [
+    {
+      "unitId": "U01",
+      "decision": "preserve",
+      "nodeIds": [
+        "t1",
+        "c1"
+      ],
+      "reason": "保留原文中的有效信息"
+    },
+    {
+      "unitId": "U02",
+      "decision": "preserve",
+      "nodeIds": [
+        "e1",
+        "c2",
+        "r1"
+      ],
+      "reason": "保留原文中的有效信息"
+    },
+    {
+      "unitId": "U03",
+      "decision": "preserve",
+      "nodeIds": [
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "reason": "保留原文中的有效信息"
+    },
+    {
+      "unitId": "U04",
+      "decision": "preserve",
+      "nodeIds": [
+        "r2",
+        "r3",
+        "a1",
+        "a2",
+        "a3"
+      ],
+      "reason": "保留原文中的有效信息"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "t1",
+      "kind": "thesis",
+      "headline": "先验证两个条件成熟的区域，再形成可复制的增长模式。",
+      "detail": "避免全面铺开同时放大交付波动。",
+      "importance": "critical",
+      "sourceQuote": "因此建议先选择需求明确、交付条件成熟的两个区域进行验证。",
+      "sourceUnitIds": [
+        "U01"
+      ]
+    },
+    {
+      "id": "c1",
+      "kind": "context",
+      "headline": "增长依赖头部客户扩张",
+      "detail": "新区域在需求、交付和渠道成熟度上存在差异。",
+      "importance": "high",
+      "sourceQuote": "当前增长主要依赖头部客户扩张",
+      "sourceUnitIds": [
+        "U01"
+      ]
+    },
+    {
+      "id": "e1",
+      "kind": "evidence",
+      "headline": "客户优先关注稳定交付与行业经验",
+      "detail": "本地响应的重要性高于单纯价格优惠。",
+      "importance": "high",
+      "sourceQuote": "标杆客户更看重稳定交付、行业经验和本地响应，而不是单纯的价格优惠。",
+      "sourceUnitIds": [
+        "U02"
+      ]
+    },
+    {
+      "id": "c2",
+      "kind": "capability",
+      "headline": "现有行业方案与核心交付能力",
+      "detail": "具备区域试点的基础能力。",
+      "importance": "medium",
+      "sourceQuote": "现有团队已经具备行业方案和核心交付能力",
+      "sourceUnitIds": [
+        "U02"
+      ]
+    },
+    {
+      "id": "r1",
+      "kind": "constraint",
+      "headline": "伙伴体系与标准机制待补齐",
+      "detail": "本地伙伴、标准报价和区域复盘尚未完善。",
+      "importance": "high",
+      "sourceQuote": "本地伙伴体系、标准报价和区域复盘机制仍需补齐。",
+      "sourceUnitIds": [
+        "U02"
+      ]
+    },
+    {
+      "id": "s1",
+      "kind": "stage",
+      "headline": "样板客户验证",
+      "detail": "完成签约与交付验证。",
+      "importance": "high",
+      "sourceQuote": "第一阶段完成样板客户签约和交付验证",
+      "sourceUnitIds": [
+        "U03"
+      ],
+      "order": 1
+    },
+    {
+      "id": "s2",
+      "kind": "stage",
+      "headline": "伙伴协同交付",
+      "detail": "固化伙伴分工与报价规则。",
+      "importance": "high",
+      "sourceQuote": "第二阶段固化伙伴分工与报价规则",
+      "sourceUnitIds": [
+        "U03"
+      ],
+      "order": 2
+    },
+    {
+      "id": "s3",
+      "kind": "stage",
+      "headline": "区域复制",
+      "detail": "验证稳定后扩大区域覆盖。",
+      "importance": "high",
+      "sourceQuote": "第三阶段再扩大区域覆盖",
+      "sourceUnitIds": [
+        "U03"
+      ],
+      "order": 3
+    },
+    {
+      "id": "r2",
+      "kind": "risk",
+      "headline": "销售承诺快于交付准备",
+      "detail": "可能造成交付波动。",
+      "importance": "high",
+      "sourceQuote": "销售承诺快于交付准备",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    },
+    {
+      "id": "r3",
+      "kind": "risk",
+      "headline": "统一方案缺少区域适配",
+      "detail": "不同区域沿用同一方案可能失效。",
+      "importance": "high",
+      "sourceQuote": "不同区域沿用同一方案造成适配不足",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    },
+    {
+      "id": "a1",
+      "kind": "action",
+      "headline": "完成两个区域客户访谈",
+      "detail": "验证真实需求与交付条件。",
+      "importance": "high",
+      "sourceQuote": "完成两个区域的客户访谈",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    },
+    {
+      "id": "a2",
+      "kind": "action",
+      "headline": "确认样板客户名单",
+      "detail": "锁定首批验证对象。",
+      "importance": "high",
+      "sourceQuote": "确认样板客户名单",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    },
+    {
+      "id": "a3",
+      "kind": "action",
+      "headline": "明确试点退出条件",
+      "detail": "避免无效投入继续扩大。",
+      "importance": "medium",
+      "sourceQuote": "明确区域试点的退出条件",
+      "sourceUnitIds": [
+        "U04"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-s1-s2",
+      "type": "precedes",
+      "from": "s1",
+      "to": "s2"
+    },
+    {
+      "id": "e-s2-s3",
+      "type": "precedes",
+      "from": "s2",
+      "to": "s3"
+    }
+  ]
+}

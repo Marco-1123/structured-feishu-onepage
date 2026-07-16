@@ -1,0 +1,65 @@
+{
+  "version": "6.0-alpha.2",
+  "protocol": "evidence-ledger-v1",
+  "sourceRef": "examples/audit-assistant/source.md",
+  "sourceSha256": "a97717b87fea0f28fd7358ecc3cfbc8a9fd172df60a4cdd6cf8ea43c732f341b",
+  "title": "审核智能助手知识库概览",
+  "units": [
+    {
+      "id": "U01",
+      "text": "审核智能助手的阶段目标，是把审核队列的数据分析、异常发现、配置查询和业务问答统一到对话入口。当前已稳定覆盖 5 个核心能力，每日节省 3-4 小时人工分析时间，关键问题平均响应时间低于 30 秒。",
+      "hash": "f4f62f672bb3c743",
+      "signals": [
+        "numeric",
+        "risk",
+        "action",
+        "process"
+      ],
+      "protected": true
+    },
+    {
+      "id": "U02",
+      "text": "五项能力包括：量级异常分析支持快速归因；延时分析支持分钟级定位；RR 调整分析支持空间回溯；任务池查询支持链路回溯；知识库问答支持持续补齐。",
+      "hash": "9e74cb0258690ed9",
+      "signals": [
+        "numeric",
+        "risk",
+        "process"
+      ],
+      "protected": true
+    },
+    {
+      "id": "U03",
+      "text": "项目已经形成三类关键依据。代码与配置规则已沉淀为稳定执行约束。Skill 与 Wiki 分层承载执行规则和长期知识。真实文档与业务问答样本用于持续回归。",
+      "hash": "4bc05d59f19fa236",
+      "signals": [
+        "numeric",
+        "risk",
+        "evidence"
+      ],
+      "protected": true
+    },
+    {
+      "id": "U04",
+      "text": "下一阶段需要统一关键指标口径，固定双周复盘节奏，并将高频能力沉淀为复用模块。完整使用链路依次为任务触发、检索定位、智能总结和规则复用。",
+      "hash": "dac32e37681be1d5",
+      "signals": [
+        "numeric",
+        "action",
+        "process"
+      ],
+      "protected": true
+    },
+    {
+      "id": "U05",
+      "text": "为了保证能力可持续复用，团队还需要维护指标字典、版本变更记录、回归样本和权限边界。新增能力必须经过真实材料验证，既要确认内容覆盖，也要确认最终飞书画板的可读性和可编辑性。",
+      "hash": "720f38edde909d72",
+      "signals": [
+        "action",
+        "process",
+        "evidence"
+      ],
+      "protected": true
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const runs = ["audit-assistant", "h1-review", "release-process"];
+const runs = ["audit-assistant", "h1-review", "release-process", "strategy-proposal", "decision-comparison", "project-plan"];
 const expected = new Set(["capability-system", "review-dashboard", "process-system"]);
 const selected = new Set();
 const failures = [];
@@ -27,4 +27,4 @@ if (failures.length) {
   console.error(failures.join("\n"));
   process.exit(1);
 }
-console.log("ok: V6 alpha integration gate passed for 3 distinct source structures");
+console.log("ok: V6 Alpha.2 integration gate passed for 6 distinct source structures");

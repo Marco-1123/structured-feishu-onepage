@@ -102,7 +102,7 @@ export function planScenes(graph) {
     },
     {
       archetype: "process-system",
-      score: 36 + Math.min(42, signal.stages * 8) + Math.min(12, signal.explicitRelations * 3) + Math.min(10, signal.capabilities * 2),
+      score: 36 + Math.min(42, signal.stages * 8) + Math.min(12, signal.explicitRelations * 3) + Math.min(10, signal.capabilities * 2) + (signal.stages >= 3 && signal.capabilities <= 3 ? 10 : 0),
       reasons: [`${signal.stages} 个有序节点`, `${signal.explicitRelations} 条显式关系`],
     },
     {
@@ -114,7 +114,7 @@ export function planScenes(graph) {
     const regions = buildRegions(graph, candidate.archetype, thesisNode);
     const sourceNodeIds = [...new Set([thesisNode.id, ...regions.flatMap((item) => item.nodeIds)])];
     return {
-      version: "6.0-alpha.1",
+      version: "6.0-alpha.2",
       sceneId: `${graph.graphId}-${candidate.archetype}-${index + 1}`,
       archetype: candidate.archetype,
       title: graph.title,

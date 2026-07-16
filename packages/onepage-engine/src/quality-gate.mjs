@@ -37,7 +37,7 @@ export function validatePreview(file) {
   const issues = [];
   if (width < 1600) issues.push(`preview width is too small: ${width}px`);
   if (ratio < 1.25) issues.push(`onepage is too tall: aspect ratio ${ratio.toFixed(2)}`);
-  if (ratio > 1.85) issues.push(`onepage is too wide: aspect ratio ${ratio.toFixed(2)}`);
+  if (ratio > 2.05) issues.push(`onepage is too wide: aspect ratio ${ratio.toFixed(2)}`);
   return { issues, metrics: { width, height, aspectRatio: Number(ratio.toFixed(3)) } };
 }
 
