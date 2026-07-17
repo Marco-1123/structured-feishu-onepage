@@ -3,9 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const runs = ["audit-assistant", "h1-review", "release-process", "strategy-proposal", "decision-comparison", "project-plan"];
-const expected = new Set(["capability-system", "review-dashboard", "process-system"]);
-const selected = new Set();
+const runs = ["audit-assistant", "h1-review", "release-process", "strategy-proposal", "decision-comparison", "project-plan", "complex-review"];
 const failures = [];
 
 for (const run of runs) {
@@ -18,13 +16,12 @@ for (const run of runs) {
   if (manifest.status !== "passed") failures.push(`${run}: status is ${manifest.status}`);
   if (!manifest.quality?.passed) failures.push(`${run}: quality gate did not pass`);
   if ((manifest.quality?.coverage?.importantCoverage ?? 0) !== 1) failures.push(`${run}: important content coverage is incomplete`);
-  if ((manifest.quality?.preview?.aspectRatio ?? 0) < 1.25) failures.push(`${run}: preview is too tall`);
-  selected.add(manifest.selection?.archetype);
+  if ((manifest.quality?.coverage?.allCoverage ?? 0) !== 1) failures.push(`${run}: source information coverage is incomplete`);
+  if ((manifest.quality?.preview?.aspectRatio ?? 0) < 1.4) failures.push(`${run}: preview is too tall`);
+  if ((manifest.quality?.semantics?.grammarCount ?? 0) < 1) failures.push(`${run}: no visual grammar was selected`);
 }
-
-for (const archetype of expected) if (!selected.has(archetype)) failures.push(`semantic regression: ${archetype} was not selected`);
 if (failures.length) {
   console.error(failures.join("\n"));
   process.exit(1);
 }
-console.log("ok: V6 Alpha.2 integration gate passed for 6 distinct source structures");
+console.log("ok: V6 Alpha.3 composition gate passed for 7 distinct source structures");

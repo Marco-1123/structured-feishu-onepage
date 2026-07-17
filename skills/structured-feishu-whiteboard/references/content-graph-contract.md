@@ -1,4 +1,4 @@
-# Content Graph Contract — Alpha.2
+# Content Graph Contract — Alpha.3
 
 The sealed content graph is the only semantic input accepted by the V6 engine. Agents cannot write it directly.
 

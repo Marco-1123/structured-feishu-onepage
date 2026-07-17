@@ -18,8 +18,10 @@ if (!sourcePath || !outputDir) {
 
 const out = path.resolve(outputDir);
 fs.mkdirSync(out, { recursive: true });
-const sourceRef = path.relative(process.cwd(), path.resolve(sourcePath));
 const source = fs.readFileSync(sourcePath, "utf8");
+const snapshotPath = path.join(out, "source-snapshot.md");
+fs.writeFileSync(snapshotPath, source);
+const sourceRef = snapshotPath;
 const packet = buildExtractionPacket(source, sourceRef);
 fs.writeFileSync(path.join(out, "extraction-packet.json"), `${JSON.stringify(packet, null, 2)}\n`);
 

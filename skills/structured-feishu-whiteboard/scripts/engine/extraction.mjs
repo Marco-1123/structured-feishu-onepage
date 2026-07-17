@@ -39,7 +39,7 @@ export function buildExtractionPacket(source, sourceRef) {
   const normalized = normalizeSource(source);
   const title = normalized.match(/^#\s+(.+)$/mu)?.[1]?.trim() || "未命名 OnePage";
   return {
-    version: "6.0-alpha.2",
+    version: "6.0-alpha.3",
     protocol: "evidence-ledger-v1",
     sourceRef,
     sourceSha256: sha256(normalized),
@@ -50,7 +50,7 @@ export function buildExtractionPacket(source, sourceRef) {
 
 export function buildDraftTemplate(packet, graphId) {
   return {
-    version: "6.0-alpha.2-draft",
+    version: "6.0-alpha.3-draft",
     graphId,
     title: packet.title,
     subtitle: "",
@@ -124,7 +124,7 @@ export function sealDraft(packet, draft) {
     issues: [],
     graph: {
       ...draft,
-      version: "6.0-alpha.2",
+      version: "6.0-alpha.3",
       extraction: {
         protocol: packet.protocol,
         sourceSha256: packet.sourceSha256,
@@ -139,10 +139,10 @@ export function verifySealedGraph(graph, cwd = process.cwd()) {
   const sourcePath = path.isAbsolute(graph.sourceRef) ? graph.sourceRef : path.resolve(cwd, graph.sourceRef);
   if (!fs.existsSync(sourcePath)) return [`source snapshot not found: ${sourcePath}`];
   const packet = buildExtractionPacket(fs.readFileSync(sourcePath, "utf8"), graph.sourceRef);
-  const draft = { ...graph, version: "6.0-alpha.2-draft" };
+  const draft = { ...graph, version: "6.0-alpha.3-draft" };
   const sealed = sealDraft(packet, draft);
   const issues = [...sealed.issues];
   if (graph.extraction?.sourceSha256 !== packet.sourceSha256) issues.push("source fingerprint does not match the sealed graph");
-  if (graph.extraction?.protocol !== "evidence-ledger-v1") issues.push("graph was not sealed by the Alpha.2 extraction protocol");
+  if (graph.extraction?.protocol !== "evidence-ledger-v1") issues.push("graph was not sealed by the evidence-ledger protocol");
   return issues;
 }

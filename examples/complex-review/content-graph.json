@@ -1,0 +1,1011 @@
+{
+  "version": "6.0-alpha.2",
+  "graphId": "audit-assistant-h1-h2-complex",
+  "title": "审核智能助手 2026 H1 复盘与 H2 规模化计划",
+  "subtitle": "同题盲测：结果、趋势、架构、流程、决策、风险与 H2 计划",
+  "sourceRef": "examples/complex-review/source.md",
+  "nodes": [
+    {
+      "id": "t1",
+      "kind": "thesis",
+      "headline": "已进入可复用阶段，H2 主线必须从扩功能转向稳定、复用与治理",
+      "detail": "H1 结果成立，但跨团队规模化仍受口径、权限和知识闭环制约。",
+      "importance": "critical",
+      "sourceQuote": "H1 的核心结论是：审核智能助手已经从单点工具进入可复用能力阶段，但距离跨团队规模化仍有治理缺口。核心目标完成率为 82%，累计节省人工分析时间 4200 小时，重点场景月活使用率达到 68%，折算释放约 0.7 FTE；同时，跨团队指标口径、权限边界和知识复用机制尚未完全统一，因此 H2 不能只追求新增功能数量，而应把稳定性、复用率和治理闭环作为主线。",
+      "sourceUnitIds": [
+        "U01",
+        "U02"
+      ]
+    },
+    {
+      "id": "m1",
+      "kind": "metric",
+      "headline": "核心目标完成率",
+      "detail": "H1 总体目标达成",
+      "importance": "high",
+      "sourceQuote": "核心目标完成率为 82%",
+      "sourceUnitIds": [
+        "U02"
+      ],
+      "measure": {
+        "display": "82%",
+        "value": 82,
+        "unit": "%",
+        "direction": "target"
+      },
+      "status": "good"
+    },
+    {
+      "id": "m2",
+      "kind": "metric",
+      "headline": "累计节省分析时间",
+      "detail": "释放约 0.7 FTE",
+      "importance": "high",
+      "sourceQuote": "累计节省人工分析时间 4200 小时",
+      "sourceUnitIds": [
+        "U02"
+      ],
+      "measure": {
+        "display": "4200h",
+        "value": 4200,
+        "unit": "小时",
+        "direction": "up"
+      },
+      "status": "good"
+    },
+    {
+      "id": "m3",
+      "kind": "metric",
+      "headline": "重点场景月活",
+      "detail": "规模化使用基础",
+      "importance": "high",
+      "sourceQuote": "重点场景月活使用率达到 68%",
+      "sourceUnitIds": [
+        "U02"
+      ],
+      "measure": {
+        "display": "68%",
+        "value": 68,
+        "unit": "%",
+        "direction": "up"
+      },
+      "status": "good"
+    },
+    {
+      "id": "tr1",
+      "kind": "trend",
+      "headline": "周活连续 6 周增长",
+      "detail": "41% → 46% → 49% → 55% → 61% → 68%",
+      "importance": "high",
+      "sourceQuote": "连续 6 周的周活使用率分别为 41%、46%、49%、55%、61% 和 68%，呈稳定上升；同一周期内，错误结论外发率从 7.2% 降至 2.8%，平均人工复核时长从 38 分钟降至 14 分钟。增长主要来自量级异常分析和延时诊断两个高频入口，而不是一次性活动拉动；这说明产品价值已经从“偶尔使用”转向“日常运营依赖”。",
+      "sourceUnitIds": [
+        "U03",
+        "U04"
+      ]
+    },
+    {
+      "id": "tr2",
+      "kind": "result",
+      "headline": "错误结论外发率下降",
+      "detail": "7.2% → 2.8%",
+      "importance": "high",
+      "sourceQuote": "错误结论外发率从 7.2% 降至 2.8%",
+      "sourceUnitIds": [
+        "U04"
+      ],
+      "status": "good",
+      "measure": {
+        "display": "7.2% → 2.8%",
+        "value": 2.8,
+        "unit": "%",
+        "direction": "down"
+      }
+    },
+    {
+      "id": "tr3",
+      "kind": "result",
+      "headline": "人工复核显著提速",
+      "detail": "38 分钟 → 14 分钟",
+      "importance": "high",
+      "sourceQuote": "平均人工复核时长从 38 分钟降至 14 分钟",
+      "sourceUnitIds": [
+        "U04"
+      ],
+      "status": "good",
+      "measure": {
+        "display": "38 → 14 min",
+        "value": 14,
+        "unit": "分钟",
+        "direction": "down"
+      }
+    },
+    {
+      "id": "cov1",
+      "kind": "result",
+      "headline": "生产覆盖",
+      "detail": "5 个 Skill / 12 个场景 / 3 个部门",
+      "importance": "high",
+      "sourceQuote": "当前已经上线 5 个生产 Skill，覆盖量级异常、延时诊断、RR 调整、任务池查询和知识问答 5 类能力，共承接 12 个业务场景，服务 3 个部门。试点团队的周留存为 73%，用户满意度为 4.4/5；但不同部门对“异常”“有效样本”和“SLA 达标”的定义仍不一致，导致同一结果在跨团队汇报时需要二次解释。",
+      "sourceUnitIds": [
+        "U05",
+        "U06"
+      ]
+    },
+    {
+      "id": "cov2",
+      "kind": "metric",
+      "headline": "试点周留存",
+      "detail": "高频用户持续使用",
+      "importance": "high",
+      "sourceQuote": "试点团队的周留存为 73%",
+      "sourceUnitIds": [
+        "U06"
+      ],
+      "measure": {
+        "display": "73%",
+        "value": 73,
+        "unit": "%",
+        "direction": "up"
+      },
+      "status": "good"
+    },
+    {
+      "id": "cov3",
+      "kind": "metric",
+      "headline": "用户满意度",
+      "detail": "试点反馈良好",
+      "importance": "medium",
+      "sourceQuote": "用户满意度为 4.4/5",
+      "sourceUnitIds": [
+        "U06"
+      ],
+      "measure": {
+        "display": "4.4/5",
+        "value": 4.4,
+        "unit": "/5",
+        "direction": "target"
+      },
+      "status": "good"
+    },
+    {
+      "id": "c1",
+      "kind": "capability",
+      "headline": "入口层",
+      "detail": "群聊关键词、队列 ID、文档链接",
+      "importance": "medium",
+      "sourceQuote": "现有系统由 5 层组成：入口层负责群聊关键词、队列 ID 和文档链接接入；路由层识别意图并选择 Skill；执行层完成数据查询、异常识别和结果解释；知识层沉淀口径、案例、错误与决策；治理层负责权限、审计、评测和版本回滚。当前执行层稳定性最高，知识层与治理层成熟度最低，尤其是知识失效后的更新责任和高风险动作的人工复核边界仍未固化。",
+      "sourceUnitIds": [
+        "U07",
+        "U08"
+      ]
+    },
+    {
+      "id": "c2",
+      "kind": "capability",
+      "headline": "路由层",
+      "detail": "识别意图并选择 Skill",
+      "importance": "medium",
+      "sourceQuote": "路由层识别意图并选择 Skill",
+      "sourceUnitIds": [
+        "U08"
+      ]
+    },
+    {
+      "id": "c3",
+      "kind": "capability",
+      "headline": "执行层",
+      "detail": "数据查询、异常识别、结果解释；当前最稳定",
+      "importance": "high",
+      "sourceQuote": "执行层完成数据查询、异常识别和结果解释",
+      "sourceUnitIds": [
+        "U08"
+      ],
+      "status": "good"
+    },
+    {
+      "id": "c4",
+      "kind": "capability",
+      "headline": "知识层",
+      "detail": "沉淀口径、案例、错误与决策；成熟度偏低",
+      "importance": "high",
+      "sourceQuote": "知识层沉淀口径、案例、错误与决策",
+      "sourceUnitIds": [
+        "U08"
+      ],
+      "status": "warning"
+    },
+    {
+      "id": "c5",
+      "kind": "capability",
+      "headline": "治理层",
+      "detail": "权限、审计、评测、回滚；边界尚未固化",
+      "importance": "high",
+      "sourceQuote": "治理层负责权限、审计、评测和版本回滚",
+      "sourceUnitIds": [
+        "U08"
+      ],
+      "status": "warning"
+    },
+    {
+      "id": "s1",
+      "kind": "input",
+      "headline": "用户触发",
+      "detail": "关键词、队列或文档入口",
+      "importance": "medium",
+      "sourceQuote": "一次完整任务依次经过 6 个阶段：1）用户触发；2）检索定位；3）数据校验；4）智能分析；5）人工复核；6）结果沉淀。当前 p95 响应时间小于 28 秒，93% 的任务可在一次对话内完成，7% 需要补充队列 ID、时间范围或权限。最容易阻塞的是数据校验阶段，主要原因是字段口径不一致和历史数据缺失。",
+      "sourceUnitIds": [
+        "U09",
+        "U10"
+      ],
+      "order": 1
+    },
+    {
+      "id": "s2",
+      "kind": "stage",
+      "headline": "检索定位",
+      "detail": "找到任务与数据范围",
+      "importance": "medium",
+      "sourceQuote": "2）检索定位",
+      "sourceUnitIds": [
+        "U10"
+      ],
+      "order": 2
+    },
+    {
+      "id": "s3",
+      "kind": "stage",
+      "headline": "数据校验",
+      "detail": "阻塞最多：口径不一致、历史数据缺失",
+      "importance": "high",
+      "sourceQuote": "3）数据校验",
+      "sourceUnitIds": [
+        "U10"
+      ],
+      "order": 3,
+      "status": "warning"
+    },
+    {
+      "id": "s4",
+      "kind": "stage",
+      "headline": "智能分析",
+      "detail": "生成异常判断与解释",
+      "importance": "medium",
+      "sourceQuote": "4）智能分析",
+      "sourceUnitIds": [
+        "U10"
+      ],
+      "order": 4
+    },
+    {
+      "id": "s5",
+      "kind": "stage",
+      "headline": "人工复核",
+      "detail": "控制高风险结论",
+      "importance": "medium",
+      "sourceQuote": "5）人工复核",
+      "sourceUnitIds": [
+        "U10"
+      ],
+      "order": 5
+    },
+    {
+      "id": "s6",
+      "kind": "output",
+      "headline": "结果沉淀",
+      "detail": "结论进入知识与复盘",
+      "importance": "medium",
+      "sourceQuote": "6）结果沉淀",
+      "sourceUnitIds": [
+        "U10"
+      ],
+      "order": 6
+    },
+    {
+      "id": "m4",
+      "kind": "metric",
+      "headline": "p95 响应",
+      "detail": "93% 一次对话完成，7% 需补信息",
+      "importance": "high",
+      "sourceQuote": "当前 p95 响应时间小于 28 秒",
+      "sourceUnitIds": [
+        "U10"
+      ],
+      "measure": {
+        "display": "<28s",
+        "value": 28,
+        "unit": "秒",
+        "direction": "down"
+      },
+      "status": "good"
+    },
+    {
+      "id": "mat1",
+      "kind": "evidence",
+      "headline": "L4 稳定能力",
+      "detail": "量级异常分析、任务池查询",
+      "importance": "high",
+      "sourceQuote": "五类核心能力的成熟度不同：量级异常分析为 L4，已经支持分钟级定位和主因归纳；延时诊断为 L3，可定位异常日期与环节，但根因解释仍依赖人工；RR 调整为 L3，能够识别空间和给出建议；任务池查询为 L4，链路稳定且可追溯；知识问答为 L2，能回答常见口径，但对跨文档冲突和知识时效的处理仍不稳定。",
+      "sourceUnitIds": [
+        "U11",
+        "U12"
+      ]
+    },
+    {
+      "id": "mat2",
+      "kind": "evidence",
+      "headline": "L3 成长能力",
+      "detail": "延时诊断、RR 调整",
+      "importance": "medium",
+      "sourceQuote": "延时诊断为 L3",
+      "sourceUnitIds": [
+        "U12"
+      ]
+    },
+    {
+      "id": "mat3",
+      "kind": "constraint",
+      "headline": "L2 知识问答",
+      "detail": "跨文档冲突和时效处理仍不稳定",
+      "importance": "high",
+      "sourceQuote": "知识问答为 L2",
+      "sourceUnitIds": [
+        "U12"
+      ],
+      "status": "warning"
+    },
+    {
+      "id": "ev1",
+      "kind": "evidence",
+      "headline": "复盘样本充分",
+      "detail": "12000 条任务 / 86 次访谈 / 24 份周报 / 37 个失败案例",
+      "importance": "high",
+      "sourceQuote": "本次复盘使用了 12000 条历史任务、86 次用户访谈、24 份周报和 37 个失败案例。数据显示，高频场景贡献了 79% 的使用量，配置不完整导致了 44% 的失败，知识过期导致了 21% 的错误解释，权限不足导致了 18% 的中断，其余 17% 来自模型误判、网络波动和人工操作。证据支持“先治理再扩张”，而不是继续平均投入所有场景。",
+      "sourceUnitIds": [
+        "U13",
+        "U14"
+      ]
+    },
+    {
+      "id": "ev2",
+      "kind": "evidence",
+      "headline": "使用高度集中",
+      "detail": "高频场景贡献 79% 使用量",
+      "importance": "high",
+      "sourceQuote": "高频场景贡献了 79% 的使用量",
+      "sourceUnitIds": [
+        "U14"
+      ]
+    },
+    {
+      "id": "ev3",
+      "kind": "evidence",
+      "headline": "失败构成",
+      "detail": "配置 44% / 知识过期 21% / 权限 18% / 其他 17%",
+      "importance": "high",
+      "sourceQuote": "配置不完整导致了 44% 的失败，知识过期导致了 21% 的错误解释，权限不足导致了 18% 的中断，其余 17%",
+      "sourceUnitIds": [
+        "U14"
+      ]
+    },
+    {
+      "id": "rc1",
+      "kind": "constraint",
+      "headline": "数据口径分散",
+      "detail": "52% 的关键指标没有统一字典",
+      "importance": "high",
+      "sourceQuote": "当前问题可以归纳为 4 个根因：第一，数据口径分散，约 52% 的关键指标没有统一字典；第二，责任边界不清，知识更新、异常升级和评测维护缺少明确 owner；第三，复盘机制偏事后，问题通常在周报阶段才被发现；第四，复用资产碎片化，Skill、Wiki、SOP 和案例库之间没有稳定引用关系。这 4 个根因互相强化，单独增加模型能力无法解决。",
+      "sourceUnitIds": [
+        "U15",
+        "U16"
+      ],
+      "status": "warning"
+    },
+    {
+      "id": "rc2",
+      "kind": "constraint",
+      "headline": "责任边界不清",
+      "detail": "知识更新、异常升级、评测维护缺少 owner",
+      "importance": "high",
+      "sourceQuote": "责任边界不清",
+      "sourceUnitIds": [
+        "U16"
+      ],
+      "status": "warning"
+    },
+    {
+      "id": "rc3",
+      "kind": "constraint",
+      "headline": "复盘机制偏事后",
+      "detail": "问题通常到周报阶段才发现",
+      "importance": "medium",
+      "sourceQuote": "复盘机制偏事后",
+      "sourceUnitIds": [
+        "U16"
+      ],
+      "status": "warning"
+    },
+    {
+      "id": "rc4",
+      "kind": "constraint",
+      "headline": "复用资产碎片化",
+      "detail": "Skill、Wiki、SOP、案例库缺少稳定引用",
+      "importance": "high",
+      "sourceQuote": "复用资产碎片化",
+      "sourceUnitIds": [
+        "U16"
+      ],
+      "status": "warning"
+    },
+    {
+      "id": "op1",
+      "kind": "option",
+      "headline": "方案 A：独立 Skill",
+      "detail": "速度 5/5；复用 2/5；治理 2/5，只保留紧急通道",
+      "importance": "medium",
+      "sourceQuote": "团队评估了 3 个方案。方案 A 是继续按需求开发独立 Skill，交付速度得分 5/5，但复用性 2/5、治理性 2/5；方案 B 是建设统一路由、指标字典和知识闭环，交付速度 3/5、复用性 5/5、治理性 5/5；方案 C 是采购外部平台，交付速度 4/5、复用性 3/5、治理性 3/5，且存在迁移成本。综合判断选择方案 B，方案 A 只保留为紧急需求通道，方案 C 暂不推进。",
+      "sourceUnitIds": [
+        "U17",
+        "U18"
+      ]
+    },
+    {
+      "id": "op2",
+      "kind": "option",
+      "headline": "方案 B：统一平台化治理",
+      "detail": "速度 3/5；复用 5/5；治理 5/5，综合选择",
+      "importance": "high",
+      "sourceQuote": "方案 B 是建设统一路由、指标字典和知识闭环",
+      "sourceUnitIds": [
+        "U18"
+      ],
+      "status": "good"
+    },
+    {
+      "id": "op3",
+      "kind": "option",
+      "headline": "方案 C：外部平台",
+      "detail": "速度 4/5；复用 3/5；治理 3/5，暂不推进",
+      "importance": "medium",
+      "sourceQuote": "方案 C 是采购外部平台",
+      "sourceUnitIds": [
+        "U18"
+      ]
+    },
+    {
+      "id": "r1",
+      "kind": "risk",
+      "headline": "历史趋势短期不可比",
+      "detail": "高风险；双口径对照 8 周",
+      "importance": "high",
+      "sourceQuote": "H2 有 4 项主要风险：数据口径迁移可能使历史趋势短期不可比，风险等级高；权限体系改造依赖安全团队排期，风险等级高；知识库批量迁移可能引入过期内容，风险等级中；业务团队在高峰期难以投入评测，风险等级中。对应控制措施是保留双口径对照 8 周、提前锁定安全评审窗口、迁移前执行知识有效期扫描、把评测嵌入日常复盘而不是单独发起。",
+      "sourceUnitIds": [
+        "U19",
+        "U20"
+      ],
+      "status": "risk"
+    },
+    {
+      "id": "r2",
+      "kind": "risk",
+      "headline": "权限改造依赖安全排期",
+      "detail": "高风险；提前锁定评审窗口",
+      "importance": "high",
+      "sourceQuote": "权限体系改造依赖安全团队排期",
+      "sourceUnitIds": [
+        "U20"
+      ],
+      "status": "risk"
+    },
+    {
+      "id": "r3",
+      "kind": "risk",
+      "headline": "迁移引入过期知识",
+      "detail": "中风险；迁移前扫描有效期",
+      "importance": "medium",
+      "sourceQuote": "知识库批量迁移可能引入过期内容",
+      "sourceUnitIds": [
+        "U20"
+      ],
+      "status": "warning"
+    },
+    {
+      "id": "r4",
+      "kind": "risk",
+      "headline": "业务高峰评测投入不足",
+      "detail": "中风险；把评测嵌入日常复盘",
+      "importance": "medium",
+      "sourceQuote": "业务团队在高峰期难以投入评测",
+      "sourceUnitIds": [
+        "U20"
+      ],
+      "status": "warning"
+    },
+    {
+      "id": "p1",
+      "kind": "stage",
+      "headline": "7—8 月：治理底座",
+      "detail": "指标字典、权限分层、统一入口；80% 高频指标收敛",
+      "importance": "high",
+      "sourceQuote": "H2 分为 3 个阶段：7—8 月完成指标字典、权限分层和统一入口，目标是 80% 的高频指标完成口径收敛；9—10 月完成知识闭环和评测平台，目标是错误结论外发率降到 1.5% 以下；11—12 月推进跨部门复制，目标是覆盖 6 个部门、周留存达到 78%、高频场景复用率达到 65%。每个阶段结束后必须进行一次 go/no-go 评审。",
+      "sourceUnitIds": [
+        "U21",
+        "U22"
+      ],
+      "order": 1
+    },
+    {
+      "id": "p2",
+      "kind": "stage",
+      "headline": "9—10 月：知识闭环",
+      "detail": "知识与评测平台；错误外发率 <1.5%",
+      "importance": "high",
+      "sourceQuote": "9—10 月完成知识闭环和评测平台",
+      "sourceUnitIds": [
+        "U22"
+      ],
+      "order": 2
+    },
+    {
+      "id": "p3",
+      "kind": "stage",
+      "headline": "11—12 月：跨部门复制",
+      "detail": "覆盖 6 部门；周留存 78%；复用率 65%",
+      "importance": "high",
+      "sourceQuote": "11—12 月推进跨部门复制",
+      "sourceUnitIds": [
+        "U22"
+      ],
+      "order": 3
+    },
+    {
+      "id": "a1",
+      "kind": "action",
+      "headline": "发布指标字典",
+      "detail": "数据负责人 · 7 月 25 日",
+      "importance": "high",
+      "sourceQuote": "未来 30 天有 5 项明确动作：数据负责人在 7 月 25 日前发布第一版指标字典；平台负责人在 7 月 31 日前完成统一路由灰度；安全负责人在 8 月 5 日前确认高风险动作审批链；运营负责人从下周开始执行双周复盘；产品负责人在 8 月 15 日前完成两个新增部门的场景盘点。所有动作都需要在同一看板追踪状态、责任人、截止日期和阻塞项。",
+      "sourceUnitIds": [
+        "U23",
+        "U24"
+      ]
+    },
+    {
+      "id": "a2",
+      "kind": "action",
+      "headline": "统一路由灰度",
+      "detail": "平台负责人 · 7 月 31 日",
+      "importance": "high",
+      "sourceQuote": "平台负责人在 7 月 31 日前完成统一路由灰度",
+      "sourceUnitIds": [
+        "U24"
+      ]
+    },
+    {
+      "id": "a3",
+      "kind": "action",
+      "headline": "确认审批链",
+      "detail": "安全负责人 · 8 月 5 日",
+      "importance": "high",
+      "sourceQuote": "安全负责人在 8 月 5 日前确认高风险动作审批链",
+      "sourceUnitIds": [
+        "U24"
+      ]
+    },
+    {
+      "id": "a4",
+      "kind": "action",
+      "headline": "启动双周复盘",
+      "detail": "运营负责人 · 下周开始",
+      "importance": "medium",
+      "sourceQuote": "运营负责人从下周开始执行双周复盘",
+      "sourceUnitIds": [
+        "U24"
+      ]
+    },
+    {
+      "id": "a5",
+      "kind": "action",
+      "headline": "盘点新增部门场景",
+      "detail": "产品负责人 · 8 月 15 日",
+      "importance": "high",
+      "sourceQuote": "产品负责人在 8 月 15 日前完成两个新增部门的场景盘点",
+      "sourceUnitIds": [
+        "U24"
+      ]
+    },
+    {
+      "id": "res1",
+      "kind": "metric",
+      "headline": "投入",
+      "detail": "6 人核心团队 / 240 万元预算；3+1+1+1 配置",
+      "importance": "high",
+      "sourceQuote": "方案 B 预计投入 6 人核心团队和 240 万元年度预算，其中平台开发 3 人、数据治理 1 人、产品运营 1 人、安全与评测 1 人。若目标达成，预计每年节省 9800 小时人工分析时间，减少 60% 的重复 Skill 开发，错误结论外发率控制在 1.5% 以下，并将新场景平均上线周期从 4 周缩短到 10 天。收益测算尚未计入跨部门知识复用带来的隐性价值。",
+      "sourceUnitIds": [
+        "U25",
+        "U26"
+      ],
+      "measure": {
+        "display": "6 人 / ¥240万",
+        "value": 240,
+        "unit": "万元",
+        "direction": "target"
+      }
+    },
+    {
+      "id": "res2",
+      "kind": "result",
+      "headline": "年度预期收益",
+      "detail": "节省 9800 小时；重复开发 -60%；错误外发 <1.5%",
+      "importance": "high",
+      "sourceQuote": "预计每年节省 9800 小时人工分析时间，减少 60% 的重复 Skill 开发，错误结论外发率控制在 1.5% 以下",
+      "sourceUnitIds": [
+        "U26"
+      ],
+      "status": "good"
+    },
+    {
+      "id": "res3",
+      "kind": "result",
+      "headline": "新场景上线提速",
+      "detail": "4 周 → 10 天",
+      "importance": "high",
+      "sourceQuote": "将新场景平均上线周期从 4 周缩短到 10 天",
+      "sourceUnitIds": [
+        "U26"
+      ],
+      "status": "good"
+    },
+    {
+      "id": "u1",
+      "kind": "unresolved",
+      "headline": "历史口径如何处理",
+      "detail": "全量回刷 vs 双口径对照",
+      "importance": "high",
+      "sourceQuote": "目前仍有 3 个待确认问题：历史口径是否需要全量回刷，还是只保留双口径对照；高风险动作的人工审批应放在执行前还是结果外发前；跨部门复制时由平台团队统一运营，还是由业务团队承担一线 owner。上述问题不会阻止 7 月启动，但必须在 8 月 15 日前形成书面决策，否则会影响 9 月知识闭环建设。",
+      "sourceUnitIds": [
+        "U27",
+        "U28"
+      ],
+      "status": "warning"
+    },
+    {
+      "id": "u2",
+      "kind": "unresolved",
+      "headline": "审批前置位置",
+      "detail": "执行前 vs 结果外发前",
+      "importance": "high",
+      "sourceQuote": "高风险动作的人工审批应放在执行前还是结果外发前",
+      "sourceUnitIds": [
+        "U28"
+      ],
+      "status": "warning"
+    },
+    {
+      "id": "u3",
+      "kind": "unresolved",
+      "headline": "跨部门运营归属",
+      "detail": "平台统一运营 vs 业务一线 owner；8 月 15 日前决策",
+      "importance": "high",
+      "sourceQuote": "跨部门复制时由平台团队统一运营，还是由业务团队承担一线 owner",
+      "sourceUnitIds": [
+        "U28"
+      ],
+      "status": "warning"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "type": "precedes",
+      "from": "s1",
+      "to": "s2"
+    },
+    {
+      "id": "edge-2",
+      "type": "precedes",
+      "from": "s2",
+      "to": "s3"
+    },
+    {
+      "id": "edge-3",
+      "type": "precedes",
+      "from": "s3",
+      "to": "s4"
+    },
+    {
+      "id": "edge-4",
+      "type": "precedes",
+      "from": "s4",
+      "to": "s5"
+    },
+    {
+      "id": "edge-5",
+      "type": "precedes",
+      "from": "s5",
+      "to": "s6"
+    },
+    {
+      "id": "edge-6",
+      "type": "precedes",
+      "from": "p1",
+      "to": "p2"
+    },
+    {
+      "id": "edge-7",
+      "type": "precedes",
+      "from": "p2",
+      "to": "p3"
+    }
+  ],
+  "sourceDecisions": [
+    {
+      "unitId": "U01",
+      "decision": "merge",
+      "nodeIds": [
+        "t1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U02",
+      "decision": "preserve",
+      "nodeIds": [
+        "t1",
+        "m1",
+        "m2",
+        "m3"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U03",
+      "decision": "merge",
+      "nodeIds": [
+        "tr1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U04",
+      "decision": "preserve",
+      "nodeIds": [
+        "tr1",
+        "tr2",
+        "tr3"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U05",
+      "decision": "merge",
+      "nodeIds": [
+        "cov1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U06",
+      "decision": "preserve",
+      "nodeIds": [
+        "cov1",
+        "cov2",
+        "cov3"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U07",
+      "decision": "merge",
+      "nodeIds": [
+        "c1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U08",
+      "decision": "preserve",
+      "nodeIds": [
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U09",
+      "decision": "merge",
+      "nodeIds": [
+        "s1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U10",
+      "decision": "preserve",
+      "nodeIds": [
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "s5",
+        "s6",
+        "m4"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U11",
+      "decision": "merge",
+      "nodeIds": [
+        "mat1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U12",
+      "decision": "preserve",
+      "nodeIds": [
+        "mat1",
+        "mat2",
+        "mat3"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U13",
+      "decision": "merge",
+      "nodeIds": [
+        "ev1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U14",
+      "decision": "preserve",
+      "nodeIds": [
+        "ev1",
+        "ev2",
+        "ev3"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U15",
+      "decision": "merge",
+      "nodeIds": [
+        "rc1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U16",
+      "decision": "preserve",
+      "nodeIds": [
+        "rc1",
+        "rc2",
+        "rc3",
+        "rc4"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U17",
+      "decision": "merge",
+      "nodeIds": [
+        "op1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U18",
+      "decision": "preserve",
+      "nodeIds": [
+        "op1",
+        "op2",
+        "op3"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U19",
+      "decision": "merge",
+      "nodeIds": [
+        "r1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U20",
+      "decision": "preserve",
+      "nodeIds": [
+        "r1",
+        "r2",
+        "r3",
+        "r4"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U21",
+      "decision": "merge",
+      "nodeIds": [
+        "p1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U22",
+      "decision": "preserve",
+      "nodeIds": [
+        "p1",
+        "p2",
+        "p3"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U23",
+      "decision": "merge",
+      "nodeIds": [
+        "a1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U24",
+      "decision": "preserve",
+      "nodeIds": [
+        "a1",
+        "a2",
+        "a3",
+        "a4",
+        "a5"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U25",
+      "decision": "merge",
+      "nodeIds": [
+        "res1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U26",
+      "decision": "preserve",
+      "nodeIds": [
+        "res1",
+        "res2",
+        "res3"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    },
+    {
+      "unitId": "U27",
+      "decision": "merge",
+      "nodeIds": [
+        "u1"
+      ],
+      "reason": "章节标题合并到对应信息模块"
+    },
+    {
+      "unitId": "U28",
+      "decision": "preserve",
+      "nodeIds": [
+        "u1",
+        "u2",
+        "u3"
+      ],
+      "reason": "保留原文关键事实、数字与关系"
+    }
+  ],
+  "extraction": {
+    "protocol": "evidence-ledger-v1",
+    "sourceSha256": "fa5c2d5b1b813080f6d9a589ccae85c66801bd1136801bf603fcebd8bbe06c49",
+    "sourceUnitCount": 28,
+    "sealedAt": "2026-07-17T05:32:10.446Z"
+  }
+}

@@ -1,0 +1,184 @@
+const IMPORTANT = new Set(["critical", "high", "medium"]);
+
+function ordered(nodes) {
+  return [...nodes].sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || a.id.localeCompare(b.id));
+}
+
+function numericTokens(value) {
+  return [...String(value || "").matchAll(/-?\d+(?:\.\d+)?/g)].map((match) => Number(match[0]));
+}
+
+function unit(type, title, nodes, options = {}) {
+  if (!nodes.length) return null;
+  return {
+    id: `${type}-${nodes.map((node) => node.id).join("-")}`,
+    type,
+    title,
+    sourceNodeIds: nodes.map((node) => node.id),
+    nodes,
+    ...options
+  };
+}
+
+function splitRisk(node) {
+  const parts = String(node.detail || "").split(/[；;]/).map((item) => item.trim()).filter(Boolean);
+  return { risk: parts[0] || node.headline, control: parts.slice(1).join("；") || "需要明确责任人与验证口径" };
+}
+
+function precedesComponents(graph, nodes) {
+  const ids = new Set(nodes.map((node) => node.id));
+  const neighbors = new Map(nodes.map((node) => [node.id, new Set()]));
+  for (const edge of graph.edges.filter((item) => item.type === "precedes" && ids.has(item.from) && ids.has(item.to))) {
+    neighbors.get(edge.from).add(edge.to);
+    neighbors.get(edge.to).add(edge.from);
+  }
+  const seen = new Set();
+  const components = [];
+  for (const node of nodes) {
+    if (seen.has(node.id)) continue;
+    const stack = [node.id];
+    const component = [];
+    while (stack.length) {
+      const id = stack.pop();
+      if (seen.has(id)) continue;
+      seen.add(id);
+      component.push(nodes.find((item) => item.id === id));
+      for (const neighbor of neighbors.get(id) || []) stack.push(neighbor);
+    }
+    components.push(ordered(component));
+  }
+  return components.sort((a, b) => {
+    const boundaryA = a.some((node) => ["input", "output"].includes(node.kind)) ? 10 : 0;
+    const boundaryB = b.some((node) => ["input", "output"].includes(node.kind)) ? 10 : 0;
+    return boundaryB + b.length - boundaryA - a.length;
+  });
+}
+
+function selectMetrics(nodes) {
+  return [...nodes]
+    .sort((a, b) => {
+      const rank = { critical: 4, high: 3, medium: 2, low: 1 };
+      return (rank[b.importance] || 0) - (rank[a.importance] || 0) || a.id.localeCompare(b.id);
+    })
+    .slice(0, 5);
+}
+
+export function compileComposition(graph) {
+  const compactGraph = graph.nodes.length <= 24;
+  const thesis = graph.nodes.find((node) => node.kind === "thesis")
+    || graph.nodes.find((node) => node.importance === "critical")
+    || graph.nodes[0];
+  const consumed = new Set([thesis.id]);
+  const take = (predicate) => graph.nodes.filter((node) => !consumed.has(node.id) && predicate(node));
+  const use = (nodes) => nodes.forEach((node) => consumed.add(node.id));
+  const units = [];
+  const add = (candidate) => {
+    if (!candidate) return;
+    use(candidate.nodes);
+    units.push(candidate);
+  };
+
+  const metricNodes = take((node) => ["metric", "result"].includes(node.kind) && node.measure?.display);
+  const primaryMetrics = selectMetrics(metricNodes);
+  const metricUnit = unit("metric-band", "关键结果", primaryMetrics, { span: 12, height: 245, primaryCount: primaryMetrics.length });
+  add(metricUnit);
+
+  const trendNodes = take((node) => node.kind === "trend" || /→|连续\s*\d+\s*[周月季]/.test(`${node.headline} ${node.detail || ""}`));
+  const trend = trendNodes.find((node) => numericTokens(node.detail).length >= 3);
+
+  const orderedCandidates = take((node) => ["input", "stage", "output"].includes(node.kind));
+  const orderedGroups = precedesComponents(graph, orderedCandidates);
+  const processNodes = orderedGroups[0] || [];
+  if (processNodes.length >= 3) add(unit("process-chain", "端到端工作链路", processNodes, { span: 12, height: 280 }));
+
+  if (trend) add(unit("trend-chart", trend.headline, [trend], { span: 4, height: 300, values: numericTokens(trend.detail) }));
+
+  const capabilityNodes = take((node) => node.kind === "capability");
+  if (capabilityNodes.length) add(unit("layer-stack", "能力与系统架构", capabilityNodes, { span: 4, height: 320 }));
+
+  const maturityNodes = take((node) => /^L[1-5]\b/i.test(node.headline) || /成熟度/.test(`${node.headline} ${node.detail || ""}`));
+  if (maturityNodes.length) add(unit("maturity-bars", "能力成熟度", maturityNodes, { span: 4, height: 320 }));
+
+  const evidenceNodes = take((node) => node.kind === "evidence");
+  const distributionEvidence = evidenceNodes.find((node) => numericTokens(node.detail).length >= 3 && /%/.test(node.detail || ""));
+  const sampleEvidence = evidenceNodes.filter((node) => node !== distributionEvidence && numericTokens(`${node.headline} ${node.detail}`).length >= 2).slice(0, 3);
+  const evidenceDashboardNodes = [...sampleEvidence, ...(distributionEvidence ? [distributionEvidence] : [])];
+  if (evidenceDashboardNodes.length) add(unit("evidence-dashboard", "样本、验证与失败分布", evidenceDashboardNodes, {
+    span: 4,
+    height: 320,
+    sampleNodes: sampleEvidence,
+    distributionNode: distributionEvidence || null,
+    values: distributionEvidence ? numericTokens(distributionEvidence.detail).slice(0, 5) : []
+  }));
+
+  const optionNodes = take((node) => node.kind === "option");
+  if (optionNodes.length) add(unit("option-comparison", "方案比较与建议", optionNodes, { span: optionNodes.length >= 3 ? 8 : 6, height: 340 }));
+
+  const riskNodes = take((node) => node.kind === "risk");
+  const decisions = take((node) => node.kind === "unresolved");
+  const governanceNodes = [...riskNodes, ...decisions];
+  if (governanceNodes.length) add(unit("risk-control", "风险、控制与待决策", governanceNodes, {
+    span: optionNodes.length >= 3 ? 4 : 6,
+    height: governanceNodes.length > 4 ? 380 : 340,
+    pairs: [
+      ...riskNodes.map(splitRisk),
+      ...decisions.map((node) => ({ risk: `待决策：${node.headline}`, control: node.detail || "明确责任人与验收口径" }))
+    ]
+  }));
+
+  const constraints = take((node) => node.kind === "constraint");
+  if (constraints.length) add(unit("cause-map", "关键制约与根因", constraints, { span: 4, height: 320 }));
+
+  const secondaryStages = orderedGroups.slice(1).flat().filter((node) => !consumed.has(node.id));
+  const roadmapActions = take((node) => node.kind === "action" && (Number.isFinite(node.order) || /H[12]|Q[1-4]|阶段|月|周/.test(`${node.headline} ${node.detail || ""}`)));
+  const roadmap = secondaryStages.length >= 2 ? secondaryStages : ordered(roadmapActions);
+  if (roadmap.length >= 2) add(unit("roadmap", "下一阶段路线图", roadmap, { span: 12, height: 310 }));
+
+  const actions = take((node) => node.kind === "action");
+  if (actions.length) add(unit("action-list", "近期行动", actions, {
+    span: compactGraph && actions.length >= 2 ? 12 : 4,
+    height: compactGraph && actions.length >= 2 ? 220 : 310
+  }));
+
+  const remainingMetrics = take((node) => ["metric", "result", "trend"].includes(node.kind));
+  if (remainingMetrics.length) {
+    use(remainingMetrics);
+    metricUnit.nodes.push(...remainingMetrics);
+    metricUnit.sourceNodeIds.push(...remainingMetrics.map((node) => node.id));
+  }
+
+  const remainingEvidence = take((node) => ["evidence", "context", "criterion", "actor"].includes(node.kind));
+  if (remainingEvidence.length) {
+    const evidenceUnit = units.find((item) => item.type === "evidence-dashboard");
+    if (evidenceUnit) {
+      use(remainingEvidence);
+      evidenceUnit.nodes.push(...remainingEvidence);
+      evidenceUnit.sourceNodeIds.push(...remainingEvidence.map((node) => node.id));
+    } else add(unit("evidence-ledger", "关键依据", remainingEvidence, {
+      span: compactGraph && remainingEvidence.length >= 3 ? 12 : 4,
+      height: compactGraph && remainingEvidence.length >= 3 ? 220 : 300
+    }));
+  }
+
+  const remaining = graph.nodes.filter((node) => !consumed.has(node.id));
+  if (remaining.length) add(unit("information-grid", "补充信息", remaining, { span: 4, height: 300 }));
+
+  const allSourceNodeIds = [...new Set([thesis.id, ...units.flatMap((item) => item.sourceNodeIds)])];
+  const importantIds = graph.nodes.filter((node) => IMPORTANT.has(node.importance)).map((node) => node.id);
+  const grammarTypes = [...new Set(units.map((item) => item.type))];
+  return {
+    version: "6.0-alpha.3",
+    compositionId: `${graph.graphId}-composition`,
+    title: graph.title,
+    subtitle: graph.subtitle || "",
+    thesis,
+    units,
+    sourceNodeIds: allSourceNodeIds,
+    importantNodeIds: importantIds,
+    grammarTypes,
+    coverage: {
+      all: allSourceNodeIds.length / graph.nodes.length,
+      important: importantIds.filter((id) => allSourceNodeIds.includes(id)).length / importantIds.length
+    }
+  };
+}

@@ -1,19 +1,19 @@
 {
   "name": "structured-feishu-onepage",
-  "version": "6.0.0-alpha.2",
+  "version": "6.0.0-alpha.3",
   "private": false,
   "type": "module",
   "description": "Information-preserving OnePage compiler for editable Feishu whiteboards",
   "license": "MIT",
   "bin": {
-    "onepage-engine": "packages/onepage-engine/src/run.mjs",
-    "extract-content": "packages/onepage-engine/src/extract-content.mjs"
+    "onepage-engine": "skills/structured-feishu-whiteboard/scripts/engine/run.mjs",
+    "extract-content": "skills/structured-feishu-whiteboard/scripts/engine/extract-content.mjs"
   },
   "scripts": {
     "test": "node --test packages/onepage-engine/test/*.test.mjs",
-    "demo": "node packages/onepage-engine/src/run.mjs --graph examples/audit-assistant/content-graph.json --output-dir runs/audit-assistant",
-    "demo:review": "node packages/onepage-engine/src/run.mjs --graph examples/h1-review/content-graph.json --output-dir runs/h1-review",
-    "demo:process": "node packages/onepage-engine/src/run.mjs --graph examples/release-process/content-graph.json --output-dir runs/release-process",
+    "demo": "node skills/structured-feishu-whiteboard/scripts/engine/run.mjs --graph examples/audit-assistant/content-graph.json --output-dir runs/audit-assistant",
+    "demo:review": "node skills/structured-feishu-whiteboard/scripts/engine/run.mjs --graph examples/h1-review/content-graph.json --output-dir runs/h1-review",
+    "demo:process": "node skills/structured-feishu-whiteboard/scripts/engine/run.mjs --graph examples/release-process/content-graph.json --output-dir runs/release-process",
     "demo:all": "node scripts/run-corpus.mjs",
     "validate:alpha": "npm test && npm run demo:all && node scripts/validate-alpha.mjs"
   }

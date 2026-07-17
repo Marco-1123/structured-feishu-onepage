@@ -7,9 +7,12 @@ description: >
   process overviews where content completeness and visual structure matter.
 ---
 
-# Structured Feishu Whiteboard V6 Alpha.2
+# Structured Feishu Whiteboard V6 Alpha.3
 
-Use this Skill as a thin workflow wrapper. Do not handwrite SVG, coordinates or a historical template.
+Use this Skill as the only workflow and runtime. Resolve `SKILL_DIR` to the
+absolute directory containing this `SKILL.md`. Do not handwrite SVG, coordinates, scene JSON, or a
+historical template. Do not call a second whiteboard-generation Skill to redraw
+the result.
 
 ## Workflow
 
@@ -17,41 +20,46 @@ Use this Skill as a thin workflow wrapper. Do not handwrite SVG, coordinates or 
 2. Prepare the evidence ledger through the only extraction entry:
 
 ```bash
-node packages/onepage-engine/src/extract-content.mjs \
-  --source <source.md> \
-  --output-dir <extraction-directory>
+node "$SKILL_DIR/scripts/engine/extract-content.mjs" \
+  --source "$SOURCE_FILE" \
+  --output-dir "$EXTRACTION_DIR"
 ```
 
 3. Read every numbered evidence unit and complete the generated `content-draft.json`. Every unit must be marked `preserve`, `merge` or `drop`; protected units cannot be dropped.
 4. Seal the graph using the same entry:
 
 ```bash
-node packages/onepage-engine/src/extract-content.mjs \
-  --source <source.md> \
-  --draft <content-draft.json> \
-  --output-dir <extraction-directory>
+node "$SKILL_DIR/scripts/engine/extract-content.mjs" \
+  --source "$SOURCE_FILE" \
+  --draft "$EXTRACTION_DIR/content-draft.json" \
+  --output-dir "$EXTRACTION_DIR"
 ```
 
 5. Run the only rendering entry with the sealed graph:
 
 ```bash
-node packages/onepage-engine/src/run.mjs \
-  --graph <content-graph.json> \
-  --output-dir <run-directory>
+node "$SKILL_DIR/scripts/engine/run.mjs" \
+  --graph "$EXTRACTION_DIR/content-graph.json" \
+  --output-dir "$RUN_DIR"
 ```
 
-6. Inspect the selected preview and manifest. Production delivery remains disabled while `maturity` is `prototype`.
+6. Inspect `whiteboard.png` and `manifest.json`. A passing manifest is necessary
+   but the Agent must also reject a page that is visually head-heavy, mechanically
+   repetitive, or dominated by unused space.
 7. Use `lark-doc` to create a document and `lark-whiteboard` to write `whiteboard.json` as an editable board.
 
 ## Boundaries
 
-- The Agent classifies evidence units and writes a draft; it cannot bypass the evidence ledger or directly author a renderable graph.
-- The engine owns scene selection, layout, typography, color semantics and quality checks.
-- The native Feishu DSL owns Flex/Dagre sizing and connector routing.
+- The Agent classifies evidence units and writes a draft; it cannot bypass the evidence ledger or directly author renderable geometry.
+- The composition compiler aggregates related facts into visual units and selects graph grammar from the material itself.
+- The deterministic renderer owns layout, typography, color semantics and quality checks.
 - The user is not asked to choose versions, renderers or templates.
 - V3-V5 runners and examples are not part of this repository and cannot be selected.
-- A result is not accepted unless important-content coverage is 100%, the OnePage aspect ratio is within the quality range, and native whiteboard checks report no overflow, overlap or occlusion.
+- A result is not accepted unless all semantic nodes and all important content have 100% coverage, complex material uses multiple appropriate visual grammars, the OnePage aspect ratio is within the quality range, and native whiteboard checks report no errors or text occlusion.
 
 ## Alpha limitation
 
-This alpha fixes the extraction protocol and validates it against a blind corpus. It remains `prototype` until cross-Agent runs reproduce the same evidence coverage and semantic scene family.
+This alpha replaces scene templates with one composition compiler and packages
+the complete runtime inside the Skill. It remains `prototype` until blind
+cross-Agent runs reproduce the same evidence coverage, grammar selection and
+whole-page composition.
