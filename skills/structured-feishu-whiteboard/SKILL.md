@@ -7,7 +7,7 @@ description: >
   process overviews where content completeness and visual structure matter.
 ---
 
-# Structured Feishu Whiteboard V6 Alpha.3
+# Structured Feishu Whiteboard V6 Alpha.4
 
 Use this Skill as the only workflow and runtime. Resolve `SKILL_DIR` to the
 absolute directory containing this `SKILL.md`. Do not handwrite SVG, coordinates, scene JSON, or a
@@ -25,7 +25,7 @@ node "$SKILL_DIR/scripts/engine/extract-content.mjs" \
   --output-dir "$EXTRACTION_DIR"
 ```
 
-3. Read every numbered evidence unit and complete the generated `content-draft.json`. Every unit must be marked `preserve`, `merge` or `drop`; protected units cannot be dropped.
+3. Read every numbered evidence unit and complete the generated `content-draft.json`. Every unit must be marked `preserve`, `merge` or `drop`; protected units cannot be dropped. Mark an option `recommended: true` only when the source explicitly recommends it. Every risk needs an explicit `riskLevel` and source-grounded `control`; do not hide either meaning inside generic detail text.
 4. Seal the graph using the same entry:
 
 ```bash
@@ -47,6 +47,9 @@ node "$SKILL_DIR/scripts/engine/run.mjs" \
    but the Agent must also reject a page that is visually head-heavy, mechanically
    repetitive, or dominated by unused space.
 7. Use `lark-doc` to create a document and `lark-whiteboard` to write `whiteboard.json` as an editable board.
+8. Query the written board back as raw nodes and as an image. The queried board
+   must preserve node count, visible text, minimum type size and page bounds.
+   Inspect the Feishu-side image; local rendering alone is not sufficient.
 
 ## Boundaries
 
@@ -55,7 +58,8 @@ node "$SKILL_DIR/scripts/engine/run.mjs" \
 - The deterministic renderer owns layout, typography, color semantics and quality checks.
 - The user is not asked to choose versions, renderers or templates.
 - V3-V5 runners and examples are not part of this repository and cannot be selected.
-- A result is not accepted unless all semantic nodes and all important content have 100% coverage, complex material uses multiple appropriate visual grammars, the OnePage aspect ratio is within the quality range, and native whiteboard checks report no errors or text occlusion.
+- A result is not accepted unless every semantic node has a visible final-SVG group, every full headline and numeric claim remains visible, complex material uses multiple appropriate visual grammars, the OnePage aspect ratio is within the quality range, native whiteboard checks report no errors or text occlusion, and the Feishu round trip preserves the generated board.
+- The renderer cannot infer a recommendation from option order, convert a risk into a control, or replace source meaning with a generic label.
 
 ## Alpha limitation
 

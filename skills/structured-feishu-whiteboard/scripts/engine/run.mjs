@@ -11,7 +11,9 @@ import {
   runWhiteboardCheck,
   validateCompositionQuality,
   validatePreview,
-  validateSourceGrounding
+  validateSourceGrounding,
+  validateSvgReadability,
+  validateSvgSemantics
 } from "./quality-gate.mjs";
 
 const args = process.argv.slice(2);
@@ -45,7 +47,7 @@ writeJson(compositionPath, composition);
 fs.writeFileSync(svgPath, svg);
 
 const manifest = {
-  version: "6.0.0-alpha.3",
+  version: "6.0.0-alpha.4",
   pipeline: "composition-compiler-v1",
   maturity: "prototype",
   status: "running",
@@ -56,11 +58,15 @@ const manifest = {
 };
 
 const semanticGate = validateCompositionQuality(composition, graph);
+const visibleSemanticGate = validateSvgSemantics(svg, graph);
+const readabilityGate = validateSvgReadability(svg);
 manifest.quality = {
   semantics: semanticGate.metrics,
+  visibleSemantics: visibleSemanticGate.metrics,
+  readability: readabilityGate.metrics,
   coverage: buildCompositionCoverage(composition, graph)
 };
-const issues = [...semanticGate.issues];
+const issues = [...semanticGate.issues, ...visibleSemanticGate.issues, ...readabilityGate.issues];
 
 if (!skipRender) {
   const render = spawnSync("npx", ["-y", "@larksuite/whiteboard-cli@0.2.12", "-i", svgPath, "-o", previewPath, "-s", "1"], { encoding: "utf8" });
@@ -84,4 +90,4 @@ manifest.status = issues.length ? "failed" : "passed";
 manifest.finishedAt = new Date().toISOString();
 writeJson(path.join(out, "manifest.json"), manifest);
 if (issues.length) throw new Error(issues.join("\n"));
-console.log(`ok: V6 Alpha.3 composition -> ${out}`);
+console.log(`ok: V6 Alpha.4 composition -> ${out}`);

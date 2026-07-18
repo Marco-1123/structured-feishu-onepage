@@ -22,7 +22,13 @@ function unit(type, title, nodes, options = {}) {
 
 function splitRisk(node) {
   const parts = String(node.detail || "").split(/[；;]/).map((item) => item.trim()).filter(Boolean);
-  return { risk: parts[0] || node.headline, control: parts.slice(1).join("；") || "需要明确责任人与验证口径" };
+  const legacyControl = parts.length > 1 ? parts.slice(1).join("；") : node.detail;
+  return {
+    sourceNodeId: node.id,
+    risk: node.headline,
+    severity: node.riskLevel || (node.status === "risk" ? "high" : "medium"),
+    control: node.control || legacyControl || "待补充控制措施"
+  };
 }
 
 function precedesComponents(graph, nodes) {
@@ -80,7 +86,7 @@ export function compileComposition(graph) {
 
   const metricNodes = take((node) => ["metric", "result"].includes(node.kind) && node.measure?.display);
   const primaryMetrics = selectMetrics(metricNodes);
-  const metricUnit = unit("metric-band", "关键结果", primaryMetrics, { span: 12, height: 245, primaryCount: primaryMetrics.length });
+  const metricUnit = unit("metric-band", "关键结果", primaryMetrics, { span: 12, height: 285, primaryCount: primaryMetrics.length });
   add(metricUnit);
 
   const trendNodes = take((node) => node.kind === "trend" || /→|连续\s*\d+\s*[周月季]/.test(`${node.headline} ${node.detail || ""}`));
@@ -94,7 +100,7 @@ export function compileComposition(graph) {
   if (trend) add(unit("trend-chart", trend.headline, [trend], { span: 4, height: 300, values: numericTokens(trend.detail) }));
 
   const capabilityNodes = take((node) => node.kind === "capability");
-  if (capabilityNodes.length) add(unit("layer-stack", "能力与系统架构", capabilityNodes, { span: 4, height: 320 }));
+  if (capabilityNodes.length) add(unit("layer-stack", "能力与系统架构", capabilityNodes, { span: 4, height: Math.max(320, 120 + capabilityNodes.length * 78) }));
 
   const maturityNodes = take((node) => /^L[1-5]\b/i.test(node.headline) || /成熟度/.test(`${node.headline} ${node.detail || ""}`));
   if (maturityNodes.length) add(unit("maturity-bars", "能力成熟度", maturityNodes, { span: 4, height: 320 }));
@@ -104,8 +110,8 @@ export function compileComposition(graph) {
   const sampleEvidence = evidenceNodes.filter((node) => node !== distributionEvidence && numericTokens(`${node.headline} ${node.detail}`).length >= 2).slice(0, 3);
   const evidenceDashboardNodes = [...sampleEvidence, ...(distributionEvidence ? [distributionEvidence] : [])];
   if (evidenceDashboardNodes.length) add(unit("evidence-dashboard", "样本、验证与失败分布", evidenceDashboardNodes, {
-    span: 4,
-    height: 320,
+    span: 8,
+    height: 360,
     sampleNodes: sampleEvidence,
     distributionNode: distributionEvidence || null,
     values: distributionEvidence ? numericTokens(distributionEvidence.detail).slice(0, 5) : []
@@ -118,11 +124,11 @@ export function compileComposition(graph) {
   const decisions = take((node) => node.kind === "unresolved");
   const governanceNodes = [...riskNodes, ...decisions];
   if (governanceNodes.length) add(unit("risk-control", "风险、控制与待决策", governanceNodes, {
-    span: optionNodes.length >= 3 ? 4 : 6,
+    span: optionNodes.length >= 3 ? 4 : optionNodes.length ? 6 : governanceNodes.length >= 2 ? 12 : 8,
     height: governanceNodes.length > 4 ? 380 : 340,
     pairs: [
       ...riskNodes.map(splitRisk),
-      ...decisions.map((node) => ({ risk: `待决策：${node.headline}`, control: node.detail || "明确责任人与验收口径" }))
+      ...decisions.map((node) => ({ sourceNodeId: node.id, risk: `待决策：${node.headline}`, severity: "medium", control: node.detail || "明确责任人与验收口径" }))
     ]
   }));
 
@@ -136,8 +142,8 @@ export function compileComposition(graph) {
 
   const actions = take((node) => node.kind === "action");
   if (actions.length) add(unit("action-list", "近期行动", actions, {
-    span: compactGraph && actions.length >= 2 ? 12 : 4,
-    height: compactGraph && actions.length >= 2 ? 220 : 310
+    span: actions.length >= 3 || (compactGraph && actions.length >= 2) ? 12 : 4,
+    height: actions.length >= 3 || (compactGraph && actions.length >= 2) ? 240 : 310
   }));
 
   const remainingMetrics = take((node) => ["metric", "result", "trend"].includes(node.kind));
@@ -154,6 +160,8 @@ export function compileComposition(graph) {
       use(remainingEvidence);
       evidenceUnit.nodes.push(...remainingEvidence);
       evidenceUnit.sourceNodeIds.push(...remainingEvidence.map((node) => node.id));
+      evidenceUnit.displayNodes = evidenceUnit.nodes;
+      evidenceUnit.height = Math.max(evidenceUnit.height, 190 + Math.ceil(evidenceUnit.nodes.length / 3) * 108);
     } else add(unit("evidence-ledger", "关键依据", remainingEvidence, {
       span: compactGraph && remainingEvidence.length >= 3 ? 12 : 4,
       height: compactGraph && remainingEvidence.length >= 3 ? 220 : 300
@@ -163,11 +171,28 @@ export function compileComposition(graph) {
   const remaining = graph.nodes.filter((node) => !consumed.has(node.id));
   if (remaining.length) add(unit("information-grid", "补充信息", remaining, { span: 4, height: 300 }));
 
+  const clusterable = new Set(["layer-stack", "maturity-bars", "cause-map", "risk-control", "evidence-ledger"]);
+  const compactSignals = units.filter((item) => clusterable.has(item.type) && (item.nodes.length === 1 || (item.type === "layer-stack" && item.nodes.length <= 3)));
+  if (compactSignals.length >= 2) {
+    const insertionIndex = Math.min(...compactSignals.map((item) => units.indexOf(item)));
+    for (const item of compactSignals) units.splice(units.indexOf(item), 1);
+    units.splice(insertionIndex, 0, {
+      id: `insight-cluster-${compactSignals.flatMap((item) => item.nodes).map((node) => node.id).join("-")}`,
+      type: "insight-cluster",
+      title: "关键判断信号",
+      span: 12,
+      height: 320,
+      entries: compactSignals,
+      nodes: compactSignals.flatMap((item) => item.nodes),
+      sourceNodeIds: compactSignals.flatMap((item) => item.sourceNodeIds)
+    });
+  }
+
   const allSourceNodeIds = [...new Set([thesis.id, ...units.flatMap((item) => item.sourceNodeIds)])];
   const importantIds = graph.nodes.filter((node) => IMPORTANT.has(node.importance)).map((node) => node.id);
-  const grammarTypes = [...new Set(units.map((item) => item.type))];
+  const grammarTypes = [...new Set(units.flatMap((item) => item.type === "insight-cluster" ? [item.type, ...item.entries.map((entry) => entry.type)] : [item.type]))];
   return {
-    version: "6.0-alpha.3",
+    version: "6.0-alpha.4",
     compositionId: `${graph.graphId}-composition`,
     title: graph.title,
     subtitle: graph.subtitle || "",

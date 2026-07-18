@@ -1,5 +1,4 @@
 interface:
   display_name: "Structured Feishu Whiteboard"
   short_description: "Generate complete, composed Feishu OnePage whiteboards"
-  default_prompt: "Use $structured-feishu-whiteboard to preserve the important information, compile a visual scene, and create a checked editable Feishu OnePage."
-
+  default_prompt: "Use $structured-feishu-whiteboard to preserve the source meaning, compile a source-linked visual composition, and create a round-trip-checked editable Feishu OnePage."

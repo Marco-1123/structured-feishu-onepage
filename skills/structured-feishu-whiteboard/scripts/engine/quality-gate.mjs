@@ -11,6 +11,71 @@ function normalize(value) {
     .toLowerCase();
 }
 
+function decodeXml(value) {
+  return String(value || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"');
+}
+
+function numericTokens(value) {
+  return [...String(value || "").matchAll(/-?\d+(?:\.\d+)?%?/g)].map((match) => match[0]);
+}
+
+function visibleText(markup) {
+  return [...String(markup || "").matchAll(/<text\b[^>]*>([\s\S]*?)<\/text>/g)]
+    .map((match) => decodeXml(match[1]).replace(/<[^>]+>/g, ""))
+    .join(" ");
+}
+
+export function validateSvgSemantics(svg, graph) {
+  const groups = new Map();
+  for (const match of String(svg).matchAll(/<g\s+data-source-node-id="([^"]+)">([\s\S]*?)<\/g>/g)) {
+    groups.set(decodeXml(match[1]), visibleText(match[2]));
+  }
+  const missingGroups = [];
+  const missingHeadlines = [];
+  const missingNumericClaims = [];
+  for (const node of graph.nodes) {
+    const text = groups.get(node.id);
+    if (text === undefined) {
+      missingGroups.push(node.id);
+      continue;
+    }
+    if (!normalize(text).includes(normalize(node.headline))) missingHeadlines.push(node.id);
+    const claim = [node.headline, node.detail, node.measure?.display, node.control].filter(Boolean).join(" ");
+    for (const token of new Set(numericTokens(claim))) {
+      if (!text.includes(token)) missingNumericClaims.push(`${node.id}:${token}`);
+    }
+  }
+  const issues = [];
+  if (missingGroups.length) issues.push(`final SVG does not visibly render source nodes: ${missingGroups.join(", ")}`);
+  if (missingHeadlines.length) issues.push(`final SVG truncates or omits source headlines: ${missingHeadlines.join(", ")}`);
+  if (missingNumericClaims.length) issues.push(`final SVG drops numeric claims: ${missingNumericClaims.join(", ")}`);
+  return {
+    issues,
+    metrics: {
+      sourceNodeCount: graph.nodes.length,
+      visiblyGroupedNodes: graph.nodes.length - missingGroups.length,
+      visibleHeadlineCount: graph.nodes.length - missingHeadlines.length - missingGroups.length,
+      missingGroupIds: missingGroups,
+      missingHeadlineIds: missingHeadlines,
+      missingNumericClaims
+    }
+  };
+}
+
+export function validateSvgReadability(svg) {
+  const sizes = [...String(svg).matchAll(/font-size="([\d.]+)"/g)].map((match) => Number(match[1]));
+  const minimumFontSize = sizes.length ? Math.min(...sizes) : 0;
+  const issues = [];
+  if (!sizes.length) issues.push("final SVG contains no measurable text");
+  if (minimumFontSize < 16) issues.push(`final SVG uses unreadable text below 16px: ${minimumFontSize}px`);
+  if (/…/.test(svg)) issues.push("final SVG contains truncated text marked with an ellipsis");
+  return { issues, metrics: { minimumFontSize, textNodeCount: sizes.length } };
+}
+
 export function validateSourceGrounding(graph, cwd = process.cwd()) {
   const issues = [];
   const sourcePath = path.isAbsolute(graph.sourceRef) ? graph.sourceRef : path.resolve(cwd, graph.sourceRef);
@@ -56,6 +121,8 @@ export function validateCompositionQuality(composition, graph) {
   if (kinds.has("trend") && !grammars.has("trend-chart")) issues.push("available trend data was not rendered as a trend chart");
   if (graph.nodes.filter((node) => ["input", "stage", "output"].includes(node.kind)).length >= 3 && !grammars.has("process-chain")) issues.push("available process data was not rendered as a process chain");
   if (kinds.has("option") && !grammars.has("option-comparison")) issues.push("available options were not rendered as a comparison");
+  const sparseSingletons = composition.units.filter((unit) => ["layer-stack", "maturity-bars", "cause-map", "risk-control", "evidence-ledger"].includes(unit.type) && unit.nodes.length === 1);
+  if (sparseSingletons.length >= 2) issues.push("sparse singleton signals were left as separate oversized modules");
   const rows = [];
   for (const unit of composition.units.filter((item) => item.type !== "metric-band")) {
     let row = rows.find((item) => item.used + unit.span <= 12);
@@ -98,11 +165,10 @@ export function buildCompositionCoverage(composition, graph) {
 }
 
 export function runWhiteboardCheck(input, cwd = process.cwd()) {
-  const result = spawnSync(
-    "npx",
-    ["-y", "@larksuite/whiteboard-cli@0.2.12", "-i", input, "--check"],
-    { cwd, encoding: "utf8" }
-  );
+  const direct = spawnSync("whiteboard-cli", ["-i", input, "--check"], { cwd, encoding: "utf8" });
+  const result = direct.error?.code === "ENOENT"
+    ? spawnSync("npx", ["-y", "@larksuite/whiteboard-cli@0.2.12", "-i", input, "--check"], { cwd, encoding: "utf8" })
+    : direct;
   if (result.status !== 0) return { issues: [(result.stderr || result.stdout || "whiteboard check failed").trim()], metrics: {} };
   try {
     const report = JSON.parse(result.stdout);
@@ -110,6 +176,8 @@ export function runWhiteboardCheck(input, cwd = process.cwd()) {
     if (!check) return { issues: ["whiteboard check returned no report"], metrics: {} };
     const issues = [];
     if (check.errors) issues.push(`whiteboard check found ${check.errors} errors`);
+    if ((check.summary?.textOverflow || 0) > 0) issues.push(`whiteboard check found ${check.summary.textOverflow} text overflows`);
+    if ((check.summary?.nodeOverlap || 0) > 0) issues.push(`whiteboard check found ${check.summary.nodeOverlap} node overlaps`);
     if ((check.summary?.textOcclusion || 0) > 0) issues.push(`whiteboard check found ${check.summary.textOcclusion} text occlusions`);
     return {
       issues,

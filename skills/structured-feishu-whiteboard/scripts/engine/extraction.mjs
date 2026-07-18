@@ -14,6 +14,27 @@ export function sha256(value) {
   return crypto.createHash("sha256").update(value).digest("hex");
 }
 
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonicalize(value[key])]));
+  }
+  return value;
+}
+
+export function draftFingerprint(draft) {
+  const semanticDraft = {
+    graphId: draft.graphId,
+    title: draft.title,
+    subtitle: draft.subtitle || "",
+    sourceRef: draft.sourceRef,
+    sourceDecisions: draft.sourceDecisions || [],
+    nodes: draft.nodes || [],
+    edges: draft.edges || []
+  };
+  return sha256(JSON.stringify(canonicalize(semanticDraft)));
+}
+
 export function normalizeSource(value) {
   return String(value || "").replace(/\r\n?/g, "\n").trim();
 }
@@ -39,7 +60,7 @@ export function buildExtractionPacket(source, sourceRef) {
   const normalized = normalizeSource(source);
   const title = normalized.match(/^#\s+(.+)$/mu)?.[1]?.trim() || "未命名 OnePage";
   return {
-    version: "6.0-alpha.3",
+    version: "6.0-alpha.4",
     protocol: "evidence-ledger-v1",
     sourceRef,
     sourceSha256: sha256(normalized),
@@ -50,7 +71,7 @@ export function buildExtractionPacket(source, sourceRef) {
 
 export function buildDraftTemplate(packet, graphId) {
   return {
-    version: "6.0-alpha.3-draft",
+    version: "6.0-alpha.4-draft",
     graphId,
     title: packet.title,
     subtitle: "",
@@ -67,6 +88,42 @@ function normalizeQuote(value) {
 
 function numericTokens(value) {
   return [...String(value || "").matchAll(/(?<![A-Za-z])\d+(?:\.\d+)?%?(?![A-Za-z])/g)].map((match) => match[0]);
+}
+
+function citesNumericToken(citedText, token) {
+  if (citedText.includes(token)) return true;
+  const plain = token.replace(/%$/, "");
+  const chinese = { "0": "零", "1": "一", "2": "二", "3": "三", "4": "四", "5": "五", "6": "六", "7": "七", "8": "八", "9": "九", "10": "十" }[plain];
+  if (!chinese) return false;
+  if (citedText.includes(chinese)) return true;
+  return plain === "2" && citedText.includes("两");
+}
+
+function semanticTokens(value) {
+  const normalized = String(value || "").normalize("NFKC").toLowerCase();
+  const tokens = [];
+  for (const word of normalized.match(/[a-z][a-z0-9._/-]*|\d+(?:\.\d+)?%?/g) || []) {
+    if (word.length > 1) tokens.push(word);
+  }
+  for (const sequence of normalized.match(/[\p{Script=Han}]{2,}/gu) || []) {
+    for (let index = 0; index < sequence.length - 1; index += 1) tokens.push(sequence.slice(index, index + 2));
+  }
+  return new Set(tokens);
+}
+
+function validateClaimGrounding(node, citedText) {
+  const issues = [];
+  const claimText = [node.headline, node.detail, node.measure?.display, node.control].filter(Boolean).join(" ");
+  for (const token of numericTokens(claimText)) {
+    if (!citesNumericToken(citedText, token)) issues.push(`node ${node.id} introduces uncited numeric token ${token}`);
+  }
+  const claimTokens = semanticTokens(claimText);
+  const sourceTokens = semanticTokens(citedText);
+  if (claimTokens.size >= 5) {
+    const overlap = [...claimTokens].filter((token) => sourceTokens.has(token)).length / claimTokens.size;
+    if (overlap < 0.15) issues.push(`node ${node.id} semantic claim is not supported by its cited units (${overlap.toFixed(2)})`);
+  }
+  return issues;
 }
 
 export function sealDraft(packet, draft) {
@@ -108,8 +165,13 @@ export function sealDraft(packet, draft) {
     const cited = node.sourceUnitIds.map((id) => units.get(id)).filter(Boolean);
     if (cited.length !== node.sourceUnitIds.length) issues.push(`node ${node.id} cites an unknown source unit`);
     const haystack = normalizeQuote(cited.map((unit) => unit.text).join("\n"));
+    const citedText = cited.map((unit) => unit.text).join("\n");
     const quote = normalizeQuote(node.sourceQuote);
     if (quote.length < 4 || !haystack.includes(quote)) issues.push(`node ${node.id} sourceQuote is not inside its cited units`);
+    issues.push(...validateClaimGrounding(node, citedText));
+    if (node.kind === "risk" && draft.version === "6.0-alpha.4-draft" && !String(node.control || "").trim()) {
+      issues.push(`risk node ${node.id} requires an explicit control measure`);
+    }
   }
 
   const semanticKeys = new Map();
@@ -124,11 +186,12 @@ export function sealDraft(packet, draft) {
     issues: [],
     graph: {
       ...draft,
-      version: "6.0-alpha.3",
+      version: "6.0-alpha.4",
       extraction: {
         protocol: packet.protocol,
         sourceSha256: packet.sourceSha256,
         sourceUnitCount: packet.units.length,
+        draftSha256: draftFingerprint(draft),
         sealedAt: new Date().toISOString()
       }
     }
@@ -139,10 +202,13 @@ export function verifySealedGraph(graph, cwd = process.cwd()) {
   const sourcePath = path.isAbsolute(graph.sourceRef) ? graph.sourceRef : path.resolve(cwd, graph.sourceRef);
   if (!fs.existsSync(sourcePath)) return [`source snapshot not found: ${sourcePath}`];
   const packet = buildExtractionPacket(fs.readFileSync(sourcePath, "utf8"), graph.sourceRef);
-  const draft = { ...graph, version: "6.0-alpha.3-draft" };
+  const draft = { ...graph, version: graph.version === "6.0-alpha.4" ? "6.0-alpha.4-draft" : "6.0-alpha.3-draft" };
   const sealed = sealDraft(packet, draft);
   const issues = [...sealed.issues];
   if (graph.extraction?.sourceSha256 !== packet.sourceSha256) issues.push("source fingerprint does not match the sealed graph");
   if (graph.extraction?.protocol !== "evidence-ledger-v1") issues.push("graph was not sealed by the evidence-ledger protocol");
+  if (graph.version === "6.0-alpha.4" && graph.extraction?.draftSha256 !== draftFingerprint(graph)) {
+    issues.push("content graph changed after it was sealed");
+  }
   return issues;
 }

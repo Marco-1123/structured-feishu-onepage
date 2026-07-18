@@ -1,4 +1,4 @@
-# Content Graph Contract — Alpha.3
+# Content Graph Contract — Alpha.4
 
 The sealed content graph is the only semantic input accepted by the V6 engine. Agents cannot write it directly.
 
@@ -19,3 +19,7 @@ The sealed content graph is the only semantic input accepted by the V6 engine. A
 - Layout, coordinates, card sizes, colors and component names are forbidden in the content graph.
 - Units containing numbers, risks, actions, process relationships or evidence signals are protected and cannot be dropped.
 - Every number in a protected unit must remain visible in at least one destination node.
+- `recommended: true` is allowed only when the cited source explicitly makes the recommendation. Option order has no recommendation meaning.
+- Risk nodes must keep three separate fields: `headline` for the risk, `riskLevel` for severity and `control` for the mitigation. The renderer cannot derive one from another.
+- Sealing records a semantic draft fingerprint. Any later change to nodes, edges or source decisions invalidates the graph.
+- A node is covered only when its final SVG group visibly contains the complete headline and all numeric claims. Merely assigning the node to a composition unit is not coverage.

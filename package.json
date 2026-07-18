@@ -1,6 +1,6 @@
 {
   "name": "structured-feishu-onepage",
-  "version": "6.0.0-alpha.3",
+  "version": "6.0.0-alpha.4",
   "private": false,
   "type": "module",
   "description": "Information-preserving OnePage compiler for editable Feishu whiteboards",
@@ -15,6 +15,7 @@
     "demo:review": "node skills/structured-feishu-whiteboard/scripts/engine/run.mjs --graph examples/h1-review/content-graph.json --output-dir runs/h1-review",
     "demo:process": "node skills/structured-feishu-whiteboard/scripts/engine/run.mjs --graph examples/release-process/content-graph.json --output-dir runs/release-process",
     "demo:all": "node scripts/run-corpus.mjs",
+    "validate:feishu-roundtrip": "node scripts/validate-feishu-roundtrip.mjs",
     "validate:alpha": "npm test && npm run demo:all && node scripts/validate-alpha.mjs"
   }
 }
