@@ -16,13 +16,13 @@ The Skill contains both the workflow and the only executable runtime. This
 removes the repository-path mismatch that previously caused local and
 cross-Agent runs to select different implementations.
 
-V6 does not inherit historical template runners. Alpha.4 compiles metrics,
+V6 does not inherit historical template runners. Alpha.5 compiles metrics,
 processes, trends, architecture, maturity, evidence distributions, comparisons,
 risks and controls, causes, actions and roadmaps from semantic relationships.
 Geometry cannot delete information or override semantic selection. Capacity is
 resolved through aggregation, two-dimensional packing and adaptive canvas size.
 
-Alpha.4 adds an integrity chain across the whole path:
+Alpha.5 adds an integrity chain across the whole path:
 
 ```text
 source fingerprint

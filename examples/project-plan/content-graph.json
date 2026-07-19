@@ -1,5 +1,5 @@
 {
-  "version": "6.0-alpha.2",
+  "version": "6.0-alpha.5",
   "graphId": "intelligent-ops-project-plan",
   "title": "智能运营平台三阶段实施计划",
   "subtitle": "一个季度内完成试点闭环与规模推广",
@@ -237,6 +237,7 @@
     "protocol": "evidence-ledger-v1",
     "sourceSha256": "0fea2e594f6aabe58fc558e8532a132d770089a870fcedf0b8e9aadf6efdfc61",
     "sourceUnitCount": 4,
-    "sealedAt": "2026-07-16T18:56:30.027Z"
+    "draftSha256": "c28e42e9b3fe4d5c3fa40279f28ba7a596dd0b9af859f109d258f19d666373d1",
+    "sealedAt": "2026-07-19T18:20:32.321Z"
   }
 }

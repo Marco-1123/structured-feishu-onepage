@@ -21,22 +21,23 @@ function unit(type, title, nodes, options = {}) {
 }
 
 function splitRisk(node) {
-  const parts = String(node.detail || "").split(/[；;]/).map((item) => item.trim()).filter(Boolean);
-  const legacyControl = parts.length > 1 ? parts.slice(1).join("；") : node.detail;
   return {
     sourceNodeId: node.id,
+    type: "risk",
     risk: node.headline,
+    detail: node.detail || "",
     severity: node.riskLevel || (node.status === "risk" ? "high" : "medium"),
-    control: node.control || legacyControl || "待补充控制措施"
+    control: node.control || ""
   };
 }
 
 function precedesComponents(graph, nodes) {
   const ids = new Set(nodes.map((node) => node.id));
-  const neighbors = new Map(nodes.map((node) => [node.id, new Set()]));
-  for (const edge of graph.edges.filter((item) => item.type === "precedes" && ids.has(item.from) && ids.has(item.to))) {
-    neighbors.get(edge.from).add(edge.to);
-    neighbors.get(edge.to).add(edge.from);
+  const edges = graph.edges.filter((item) => item.type === "precedes" && ids.has(item.from) && ids.has(item.to));
+  const undirected = new Map(nodes.map((node) => [node.id, new Set()]));
+  for (const edge of edges) {
+    undirected.get(edge.from).add(edge.to);
+    undirected.get(edge.to).add(edge.from);
   }
   const seen = new Set();
   const components = [];
@@ -49,9 +50,31 @@ function precedesComponents(graph, nodes) {
       if (seen.has(id)) continue;
       seen.add(id);
       component.push(nodes.find((item) => item.id === id));
-      for (const neighbor of neighbors.get(id) || []) stack.push(neighbor);
+      for (const neighbor of undirected.get(id) || []) stack.push(neighbor);
     }
-    components.push(ordered(component));
+    const componentIds = new Set(component.map((item) => item.id));
+    const componentEdges = edges.filter((edge) => componentIds.has(edge.from) && componentIds.has(edge.to));
+    const indegree = new Map(component.map((item) => [item.id, 0]));
+    const outgoing = new Map(component.map((item) => [item.id, []]));
+    for (const edge of componentEdges) {
+      indegree.set(edge.to, indegree.get(edge.to) + 1);
+      outgoing.get(edge.from).push(edge.to);
+    }
+    const byId = new Map(component.map((item) => [item.id, item]));
+    const queue = ordered(component.filter((item) => indegree.get(item.id) === 0));
+    const directed = [];
+    while (queue.length) {
+      const current = queue.shift();
+      directed.push(current);
+      for (const target of outgoing.get(current.id)) {
+        indegree.set(target, indegree.get(target) - 1);
+        if (indegree.get(target) === 0) {
+          queue.push(byId.get(target));
+          queue.sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || a.id.localeCompare(b.id));
+        }
+      }
+    }
+    components.push(directed.length === component.length ? directed : ordered(component));
   }
   return components.sort((a, b) => {
     const boundaryA = a.some((node) => ["input", "output"].includes(node.kind)) ? 10 : 0;
@@ -86,7 +109,11 @@ export function compileComposition(graph) {
 
   const metricNodes = take((node) => ["metric", "result"].includes(node.kind) && node.measure?.display);
   const primaryMetrics = selectMetrics(metricNodes);
-  const metricUnit = unit("metric-band", "关键结果", primaryMetrics, { span: 12, height: 285, primaryCount: primaryMetrics.length });
+  const metricUnit = unit("metric-band", "关键结果", primaryMetrics, {
+    span: primaryMetrics.length === 1 ? 4 : 12,
+    height: primaryMetrics.length === 1 ? 300 : 285,
+    primaryCount: primaryMetrics.length
+  });
   add(metricUnit);
 
   const trendNodes = take((node) => node.kind === "trend" || /→|连续\s*\d+\s*[周月季]/.test(`${node.headline} ${node.detail || ""}`));
@@ -97,7 +124,7 @@ export function compileComposition(graph) {
   const processNodes = orderedGroups[0] || [];
   if (processNodes.length >= 3) add(unit("process-chain", "端到端工作链路", processNodes, { span: 12, height: 280 }));
 
-  if (trend) add(unit("trend-chart", trend.headline, [trend], { span: 4, height: 300, values: numericTokens(trend.detail) }));
+  if (trend) add(unit("trend-chart", trend.headline, [trend], { span: 4, height: 300 }));
 
   const capabilityNodes = take((node) => node.kind === "capability");
   if (capabilityNodes.length) add(unit("layer-stack", "能力与系统架构", capabilityNodes, { span: 4, height: Math.max(320, 120 + capabilityNodes.length * 78) }));
@@ -128,7 +155,7 @@ export function compileComposition(graph) {
     height: governanceNodes.length > 4 ? 380 : 340,
     pairs: [
       ...riskNodes.map(splitRisk),
-      ...decisions.map((node) => ({ sourceNodeId: node.id, risk: `待决策：${node.headline}`, severity: "medium", control: node.detail || "明确责任人与验收口径" }))
+      ...decisions.map((node) => ({ sourceNodeId: node.id, type: "decision", risk: node.headline, detail: node.detail || "", severity: "medium", control: "" }))
     ]
   }));
 
@@ -180,7 +207,7 @@ export function compileComposition(graph) {
       id: `insight-cluster-${compactSignals.flatMap((item) => item.nodes).map((node) => node.id).join("-")}`,
       type: "insight-cluster",
       title: "关键判断信号",
-      span: 12,
+      span: metricUnit?.span === 4 ? 8 : 12,
       height: 320,
       entries: compactSignals,
       nodes: compactSignals.flatMap((item) => item.nodes),
@@ -192,7 +219,7 @@ export function compileComposition(graph) {
   const importantIds = graph.nodes.filter((node) => IMPORTANT.has(node.importance)).map((node) => node.id);
   const grammarTypes = [...new Set(units.flatMap((item) => item.type === "insight-cluster" ? [item.type, ...item.entries.map((entry) => entry.type)] : [item.type]))];
   return {
-    version: "6.0-alpha.4",
+    version: "6.0-alpha.5",
     compositionId: `${graph.graphId}-composition`,
     title: graph.title,
     subtitle: graph.subtitle || "",

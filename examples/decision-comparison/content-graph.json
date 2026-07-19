@@ -1,5 +1,5 @@
 {
-  "version": "6.0-alpha.2",
+  "version": "6.0-alpha.5",
   "graphId": "knowledge-carrier-decision",
   "title": "团队知识承载方案选型",
   "subtitle": "按稳定性、可读性和协作成本进行分层",
@@ -221,6 +221,7 @@
     "protocol": "evidence-ledger-v1",
     "sourceSha256": "1ff44f766abdb08efe79552e76de23a259b9ec6e6775143543fbfcf7ca5096d2",
     "sourceUnitCount": 4,
-    "sealedAt": "2026-07-16T18:56:29.948Z"
+    "draftSha256": "3d12836e7fd3e45ead6afb8c9eb9b18fb968ec015d9c993005e59ff94eacc307",
+    "sealedAt": "2026-07-19T18:20:32.320Z"
   }
 }

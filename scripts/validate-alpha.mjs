@@ -26,4 +26,4 @@ if (failures.length) {
   console.error(failures.join("\n"));
   process.exit(1);
 }
-console.log("ok: V6 Alpha.4 composition gate passed for 7 distinct source structures");
+console.log("ok: V6 Alpha.5 composition gate passed for 7 distinct source structures");

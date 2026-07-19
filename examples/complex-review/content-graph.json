@@ -1,5 +1,5 @@
 {
-  "version": "6.0-alpha.2",
+  "version": "6.0-alpha.5",
   "graphId": "audit-assistant-h1-h2-complex",
   "title": "审核智能助手 2026 H1 复盘与 H2 规模化计划",
   "subtitle": "同题盲测：结果、趋势、架构、流程、决策、风险与 H2 计划",
@@ -1006,6 +1006,7 @@
     "protocol": "evidence-ledger-v1",
     "sourceSha256": "fa5c2d5b1b813080f6d9a589ccae85c66801bd1136801bf603fcebd8bbe06c49",
     "sourceUnitCount": 28,
-    "sealedAt": "2026-07-17T05:32:10.446Z"
+    "draftSha256": "541a5a25ae9a4101c7af56ecd63e02b1829f9e8cc751d35aef1e2d063b6bd845",
+    "sealedAt": "2026-07-19T18:20:32.328Z"
   }
 }

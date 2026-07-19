@@ -36,6 +36,7 @@ export function validateSvgSemantics(svg, graph) {
   }
   const missingGroups = [];
   const missingHeadlines = [];
+  const missingFields = [];
   const missingNumericClaims = [];
   for (const node of graph.nodes) {
     const text = groups.get(node.id);
@@ -44,6 +45,11 @@ export function validateSvgSemantics(svg, graph) {
       continue;
     }
     if (!normalize(text).includes(normalize(node.headline))) missingHeadlines.push(node.id);
+    for (const [field, value] of [["detail", node.detail], ["measure", node.measure?.display], ["control", node.control]]) {
+      if (value && !normalize(text).includes(normalize(value))) missingFields.push(`${node.id}:${field}`);
+    }
+    if (node.recommended === true && !text.includes("推荐")) missingFields.push(`${node.id}:recommended`);
+    if (node.riskLevel === "high" && !text.includes("高风险")) missingFields.push(`${node.id}:riskLevel`);
     const claim = [node.headline, node.detail, node.measure?.display, node.control].filter(Boolean).join(" ");
     for (const token of new Set(numericTokens(claim))) {
       if (!text.includes(token)) missingNumericClaims.push(`${node.id}:${token}`);
@@ -52,6 +58,7 @@ export function validateSvgSemantics(svg, graph) {
   const issues = [];
   if (missingGroups.length) issues.push(`final SVG does not visibly render source nodes: ${missingGroups.join(", ")}`);
   if (missingHeadlines.length) issues.push(`final SVG truncates or omits source headlines: ${missingHeadlines.join(", ")}`);
+  if (missingFields.length) issues.push(`final SVG truncates, relabels or omits semantic fields: ${missingFields.join(", ")}`);
   if (missingNumericClaims.length) issues.push(`final SVG drops numeric claims: ${missingNumericClaims.join(", ")}`);
   return {
     issues,
@@ -61,6 +68,7 @@ export function validateSvgSemantics(svg, graph) {
       visibleHeadlineCount: graph.nodes.length - missingHeadlines.length - missingGroups.length,
       missingGroupIds: missingGroups,
       missingHeadlineIds: missingHeadlines,
+      missingFields,
       missingNumericClaims
     }
   };
@@ -123,8 +131,10 @@ export function validateCompositionQuality(composition, graph) {
   if (kinds.has("option") && !grammars.has("option-comparison")) issues.push("available options were not rendered as a comparison");
   const sparseSingletons = composition.units.filter((unit) => ["layer-stack", "maturity-bars", "cause-map", "risk-control", "evidence-ledger"].includes(unit.type) && unit.nodes.length === 1);
   if (sparseSingletons.length >= 2) issues.push("sparse singleton signals were left as separate oversized modules");
+  const singleFullMetric = composition.units.find((item) => item.type === "metric-band" && item.nodes.length === 1 && item.span === 12);
+  if (singleFullMetric) issues.push("a single metric must not reserve a full-width row");
   const rows = [];
-  for (const unit of composition.units.filter((item) => item.type !== "metric-band")) {
+  for (const unit of composition.units.filter((item) => !(item.type === "metric-band" && item.span === 12))) {
     let row = rows.find((item) => item.used + unit.span <= 12);
     if (!row) {
       row = { used: 0, types: [] };

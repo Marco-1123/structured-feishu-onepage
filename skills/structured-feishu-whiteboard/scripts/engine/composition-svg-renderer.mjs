@@ -95,19 +95,23 @@ function renderMetricBand(unit, x, y, width, height) {
 }
 
 function renderTrend(unit, x, y, width, height) {
-  let out = sectionShell(x, y, width, height, unit.title, "用连续变化判断是否形成稳定趋势");
-  const values = unit.values || [];
-  const min = Math.min(...values), max = Math.max(...values);
-  const left = x + 58, right = x + width - 44, top = y + 120, bottom = y + height - 58;
+  const node = unit.nodes[0];
+  const matches = [...String(node.detail || "").matchAll(/(?:^|(?:->|→)\s*)([A-Za-z]+\d+|第?[一二三四五六七八九十\d]+(?:周|月|季|阶段))?\s*([<>≤≥]=?\s*)?([+-]?\d+(?:\.\d+)?)\s*(%|％|秒|分钟|min|小时|h|天|周|月|人|个)?/giu)]
+    .map((match, index) => ({ label: match[1] || `第${index + 1}期`, value: Number(match[3]), display: `${match[2] || ""}${match[3]}${match[4] || ""}` }))
+    .filter((item) => Number.isFinite(item.value));
+  let out = sectionShell(x, y, width, height, unit.title, node.detail || "用连续变化判断是否形成稳定趋势");
+  const values = matches.length >= 2 ? matches : (unit.values || []).map((value, index) => ({ label: `第${index + 1}期`, value, display: String(value) }));
+  const min = Math.min(...values.map((item) => item.value)), max = Math.max(...values.map((item) => item.value));
+  const left = x + 58, right = x + width - 44, top = y + 140, bottom = y + height - 62;
   out += line(left, bottom, right, bottom, COLORS.border, 2);
-  const points = values.map((value, index) => {
+  const points = values.map((item, index) => {
     const px = left + index * ((right - left) / Math.max(1, values.length - 1));
-    const py = bottom - ((value - min) / Math.max(1, max - min)) * (bottom - top);
-    return { px, py, value };
+    const py = bottom - ((item.value - min) / Math.max(1, max - min)) * (bottom - top);
+    return { px, py, ...item };
   });
   out += `<polyline points="${points.map((p) => `${p.px},${p.py}`).join(" ")}" fill="none" stroke="${COLORS.blue2}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;
-  for (const point of points) out += `<circle cx="${point.px}" cy="${point.py}" r="8" fill="${COLORS.surface}" stroke="${COLORS.blue2}" stroke-width="5"/>${t(point.px, point.py - 18, `${point.value}%`, 16, COLORS.ink, 700, "middle")}`;
-  return sourceGroup(unit.nodes[0], out);
+  for (const point of points) out += `<circle cx="${point.px}" cy="${point.py}" r="8" fill="${COLORS.surface}" stroke="${COLORS.blue2}" stroke-width="5"/>${t(point.px, point.py - 18, point.display, 16, COLORS.ink, 700, "middle")}${t(point.px, bottom + 28, point.label, 16, COLORS.secondary, 600, "middle")}`;
+  return sourceGroup(node, out);
 }
 
 function renderProcess(unit, x, y, width, height) {
@@ -223,25 +227,27 @@ function renderOptions(unit, x, y, width, height) {
   unit.nodes.forEach((node, index) => {
     const yy = start + index * rowH;
     const chosen = node.recommended === true;
-    out += sourceGroup(node, `${rect(x + 34, yy, width - 68, rowH - 12, chosen ? COLORS.blueSoft : "#F8FAFC", chosen ? COLORS.blue : COLORS.border, 10, chosen ? 2.5 : 1.5)}${rect(x + 52, yy + 18, 58, 28, chosen ? COLORS.blue : COLORS.grid, chosen ? COLORS.blue : COLORS.grid, 6, 1)}${t(x + 81, yy + 39, String.fromCharCode(65 + index), 16, chosen ? "#FFFFFF" : COLORS.secondary, 750, "middle")}${multiline(x + 128, yy + 34, node.headline, width * 0.42, 19, COLORS.ink, 700, 2)}${multiline(x + width * 0.52, yy + 34, node.detail || "", width * 0.42, 16, COLORS.secondary, 400, 2)}`);
+    const recommendation = chosen ? `${rect(x + width - 116, yy + 17, 66, 28, COLORS.blue, COLORS.blue, 6, 1)}${t(x + width - 83, yy + 38, "推荐", 16, "#FFFFFF", 700, "middle")}` : "";
+    out += sourceGroup(node, `${rect(x + 34, yy, width - 68, rowH - 12, chosen ? COLORS.blueSoft : "#F8FAFC", chosen ? COLORS.blue : COLORS.border, 10, chosen ? 2.5 : 1.5)}${rect(x + 52, yy + 18, 58, 28, chosen ? COLORS.blue : COLORS.grid, chosen ? COLORS.blue : COLORS.grid, 6, 1)}${t(x + 81, yy + 39, String.fromCharCode(65 + index), 16, chosen ? "#FFFFFF" : COLORS.secondary, 750, "middle")}${multiline(x + 128, yy + 34, node.headline, width * 0.38, 19, COLORS.ink, 700, 2)}${multiline(x + width * 0.50, yy + 34, node.detail || "", width * 0.38, 16, COLORS.secondary, 400, 2)}${recommendation}`);
   });
   return out;
 }
 
 function renderRisk(unit, x, y, width, height) {
-  let out = sectionShell(x, y, width, height, unit.title, "风险与控制成对呈现，不制造孤立告警");
+  let out = sectionShell(x, y, width, height, unit.title, "按原始语义区分风险、控制措施与待决策事项");
   if (unit.pairs.length === 1) {
     const pair = unit.pairs[0];
     const top = y + 104;
     const innerHeight = height - 128;
-    const split = x + Math.max(300, width * 0.42);
+    const hasControl = Boolean(pair.control);
+    const split = x + Math.max(300, width * 0.52);
     const color = pair.severity === "high" ? COLORS.amber : COLORS.blue2;
     const markup = `${rect(x + 34, top, width - 68, innerHeight, pair.severity === "high" ? COLORS.amberSoft : "#F8FAFC", COLORS.border, 10, 1)}`
       + `<circle cx="${x + 62}" cy="${top + innerHeight / 2 - 12}" r="8" fill="${color}"/>`
-      + multiline(x + 84, top + innerHeight / 2 - 4, pair.risk, split - x - 112, 21, COLORS.ink, 750, 2)
-      + line(split, top + 24, split, top + innerHeight - 24, COLORS.border, 2)
-      + t(split + 28, top + innerHeight / 2 - 31, "控制措施", 16, color, 700)
-      + multiline(split + 28, top + innerHeight / 2 + 2, pair.control, x + width - split - 72, 18, COLORS.secondary, 500, 3);
+      + t(x + 84, top + 40, pair.type === "decision" ? "待决策" : pair.severity === "high" ? "高风险" : "风险", 16, color, 700)
+      + multiline(x + 84, top + 78, pair.risk, hasControl ? split - x - 112 : width - 150, 21, COLORS.ink, 750, 2)
+      + multiline(x + 84, top + 133, pair.detail || "", hasControl ? split - x - 112 : width - 150, 16, COLORS.secondary, 400, 3)
+      + (hasControl ? `${line(split, top + 24, split, top + innerHeight - 24, COLORS.border, 2)}${t(split + 28, top + 52, "控制措施", 16, color, 700)}${multiline(split + 28, top + 88, pair.control, x + width - split - 72, 18, COLORS.secondary, 500, 3)}` : "");
     return out + sourceGroup(pair.sourceNodeId, markup);
   }
   const start = y + 104;
@@ -254,7 +260,9 @@ function renderRisk(unit, x, y, width, height) {
     const cx = x + 34 + (index % cols) * (cardW + gap);
     const yy = start + Math.floor(index / cols) * (rowH + gap);
     const color = pair.severity === "high" ? COLORS.amber : COLORS.blue2;
-    out += sourceGroup(pair.sourceNodeId, `${rect(cx, yy, cardW, rowH, pair.severity === "high" ? COLORS.amberSoft : "#F8FAFC", COLORS.border, 9, 1)}<circle cx="${cx + 22}" cy="${yy + 27}" r="6" fill="${color}"/>${multiline(cx + 39, yy + 31, pair.risk, cardW - 55, 16, COLORS.ink, 700, 2)}${multiline(cx + 18, yy + 66, `控制：${pair.control}`, cardW - 36, 16, COLORS.secondary, 400, 2)}`);
+    const label = pair.type === "decision" ? "待决策" : pair.severity === "high" ? "高风险" : "风险";
+    const supporting = [pair.detail, pair.control ? `控制措施：${pair.control}` : ""].filter(Boolean).join("｜");
+    out += sourceGroup(pair.sourceNodeId, `${rect(cx, yy, cardW, rowH, pair.severity === "high" ? COLORS.amberSoft : "#F8FAFC", COLORS.border, 9, 1)}<circle cx="${cx + 22}" cy="${yy + 27}" r="6" fill="${color}"/>${t(cx + 39, yy + 32, label, 16, color, 700)}${multiline(cx + 18, yy + 67, pair.risk, cardW - 36, 16, COLORS.ink, 700, 2)}${multiline(cx + 18, yy + 108, supporting, cardW - 36, 16, COLORS.secondary, 400, 3)}`);
   });
   return out;
 }
@@ -291,8 +299,10 @@ function renderInsightCluster(unit, x, y, width, height) {
       markup += multiline(cx + 20, top + 158, node.detail || "", cardW - 40, 16, COLORS.secondary, 500, 2);
     } else if (entry.type === "risk-control") {
       const pair = entry.pairs[0];
-      markup += multiline(cx + 20, top + 72, pair.risk, cardW - 40, 20, COLORS.ink, 750, 2);
-      markup += multiline(cx + 20, top + 119, `控制：${pair.control}`, cardW - 40, 16, COLORS.secondary, 500, 2);
+      markup += t(cx + 20, top + 68, pair.type === "decision" ? "待决策" : pair.severity === "high" ? "高风险" : "风险", 16, accent, 700);
+      markup += multiline(cx + 20, top + 103, pair.risk, cardW - 40, 20, COLORS.ink, 750, 2);
+      markup += multiline(cx + 20, top + 151, pair.detail || "", cardW - 40, 16, COLORS.secondary, 500, 2);
+      if (pair.control) markup += multiline(cx + 20, top + 198, `控制措施：${pair.control}`, cardW - 40, 16, COLORS.secondary, 500, 2);
     } else {
       markup += multiline(cx + 20, top + 72, node.headline, cardW - 40, 20, COLORS.ink, 750, 2);
       markup += multiline(cx + 20, top + 119, node.detail || "", cardW - 40, 16, COLORS.secondary, 500, 2);
@@ -413,7 +423,7 @@ function pack(units, startY, canvasWidth) {
 }
 
 export function renderCompositionToSvg(composition) {
-  const metric = composition.units.find((unit) => unit.type === "metric-band");
+  const metric = composition.units.find((unit) => unit.type === "metric-band" && unit.span === 12);
   const others = composition.units.filter((unit) => unit !== metric);
   const headerY = 80;
   let startY = 430;

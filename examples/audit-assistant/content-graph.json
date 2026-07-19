@@ -1,5 +1,5 @@
 {
-  "version": "6.0-alpha.2",
+  "version": "6.0-alpha.5",
   "graphId": "audit-assistant-overview",
   "title": "审核智能助手知识库概览",
   "subtitle": "能力结果、运行链路与下一阶段治理",
@@ -350,6 +350,7 @@
     "protocol": "evidence-ledger-v1",
     "sourceSha256": "a97717b87fea0f28fd7358ecc3cfbc8a9fd172df60a4cdd6cf8ea43c732f341b",
     "sourceUnitCount": 5,
-    "sealedAt": "2026-07-16T18:53:43.318Z"
+    "draftSha256": "1589aa48381f9202149f4de27bdfb64e98fa9970330ba876f064f32e85fb9d63",
+    "sealedAt": "2026-07-19T18:20:32.304Z"
   }
 }

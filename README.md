@@ -15,7 +15,7 @@ numbered evidence ledger
   -> editable whiteboard
 ```
 
-V6 deliberately does not copy the historical V3-V5 renderers. Alpha.4 has one
+V6 deliberately does not copy the historical V3-V5 renderers. Alpha.5 has one
 self-contained runtime inside the Skill. It preserves the evidence ledger, then
 aggregates semantic relationships into charts, processes, architecture, options,
 risks, actions and roadmaps before laying out the page.

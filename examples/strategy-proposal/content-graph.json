@@ -1,5 +1,5 @@
 {
-  "version": "6.0-alpha.2",
+  "version": "6.0-alpha.5",
   "graphId": "regional-growth-strategy",
   "title": "区域增长策略建议",
   "subtitle": "从样板验证到区域复制的增长路径",
@@ -213,6 +213,7 @@
     "protocol": "evidence-ledger-v1",
     "sourceSha256": "05af6c6e616a5ce29b23d851f634fe9e767ff42ae8a2de69628aa60c90d8a892",
     "sourceUnitCount": 4,
-    "sealedAt": "2026-07-16T18:56:29.862Z"
+    "draftSha256": "f9df87660a77027d2e15ced4645eb6f8e4995d77c3c3b5397c1f73cc2dd0d1de",
+    "sealedAt": "2026-07-19T18:20:32.317Z"
   }
 }

@@ -7,7 +7,7 @@ description: >
   process overviews where content completeness and visual structure matter.
 ---
 
-# Structured Feishu Whiteboard V6 Alpha.4
+# Structured Feishu Whiteboard V6 Alpha.5
 
 Use this Skill as the only workflow and runtime. Resolve `SKILL_DIR` to the
 absolute directory containing this `SKILL.md`. Do not handwrite SVG, coordinates, scene JSON, or a
@@ -25,7 +25,7 @@ node "$SKILL_DIR/scripts/engine/extract-content.mjs" \
   --output-dir "$EXTRACTION_DIR"
 ```
 
-3. Read every numbered evidence unit and complete the generated `content-draft.json`. Every unit must be marked `preserve`, `merge` or `drop`; protected units cannot be dropped. Mark an option `recommended: true` only when the source explicitly recommends it. Every risk needs an explicit `riskLevel` and source-grounded `control`; do not hide either meaning inside generic detail text.
+3. Read every numbered evidence unit and complete the generated `content-draft.json`. Every unit must be marked `preserve`, `merge` or `drop`; protected units cannot be dropped. Mark an option `recommended: true` only when the source explicitly recommends it. Preserve risk detail exactly; add `riskLevel` or `control` only when the source explicitly provides them. Keep unresolved decisions distinct from controls.
 4. Seal the graph using the same entry:
 
 ```bash
@@ -48,7 +48,7 @@ node "$SKILL_DIR/scripts/engine/run.mjs" \
    repetitive, or dominated by unused space.
 7. Use `lark-doc` to create a document and `lark-whiteboard` to write `whiteboard.json` as an editable board.
 8. Query the written board back as raw nodes and as an image. The queried board
-   must preserve node count, visible text, minimum type size and page bounds.
+   must preserve node types, visible text fields, type styles, geometry, connectors and minimum type size. Use a freshly queried raw file; never validate the generated file against itself.
    Inspect the Feishu-side image; local rendering alone is not sufficient.
 
 ## Boundaries

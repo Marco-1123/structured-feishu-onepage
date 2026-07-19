@@ -4,8 +4,14 @@
   "type": "object",
   "additionalProperties": false,
   "required": ["version", "graphId", "title", "sourceRef", "extraction", "sourceDecisions", "nodes", "edges"],
+  "allOf": [
+    {
+      "if": { "properties": { "version": { "const": "6.0-alpha.5" } } },
+      "then": { "properties": { "extraction": { "required": ["protocol", "sourceSha256", "sourceUnitCount", "draftSha256", "sealedAt"] } } }
+    }
+  ],
   "properties": {
-    "version": { "enum": ["6.0-alpha.2", "6.0-alpha.3", "6.0-alpha.4"] },
+    "version": { "enum": ["6.0-alpha.2", "6.0-alpha.3", "6.0-alpha.4", "6.0-alpha.5"] },
     "graphId": { "type": "string", "minLength": 3 },
     "title": { "type": "string", "minLength": 2 },
     "subtitle": { "type": "string" },

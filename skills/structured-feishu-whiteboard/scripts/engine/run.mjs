@@ -47,7 +47,7 @@ writeJson(compositionPath, composition);
 fs.writeFileSync(svgPath, svg);
 
 const manifest = {
-  version: "6.0.0-alpha.4",
+  version: "6.0.0-alpha.5",
   pipeline: "composition-compiler-v1",
   maturity: "prototype",
   status: "running",
@@ -90,4 +90,4 @@ manifest.status = issues.length ? "failed" : "passed";
 manifest.finishedAt = new Date().toISOString();
 writeJson(path.join(out, "manifest.json"), manifest);
 if (issues.length) throw new Error(issues.join("\n"));
-console.log(`ok: V6 Alpha.4 composition -> ${out}`);
+console.log(`ok: V6 Alpha.5 composition -> ${out}`);
