@@ -59,6 +59,7 @@ node "$SKILL_DIR/scripts/engine/run.mjs" \
 - The user is not asked to choose versions, renderers or templates.
 - V3-V5 runners and examples are not part of this repository and cannot be selected.
 - A result is not accepted unless every semantic node has a visible final-SVG group, every full headline and numeric claim remains visible, complex material uses multiple appropriate visual grammars, the OnePage aspect ratio is within the quality range, native whiteboard checks report no errors or text occlusion, and the Feishu round trip preserves the generated board.
+- Every semantic SVG group must declare its owning layout bounds. The quality gate estimates every text box and rejects text that crosses its card or module boundary; a native whiteboard check alone is not sufficient.
 - The renderer cannot infer a recommendation from option order, convert a risk into a control, or replace source meaning with a generic label.
 
 ## Alpha limitation

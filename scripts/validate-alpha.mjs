@@ -19,6 +19,8 @@ for (const run of runs) {
   if ((manifest.quality?.coverage?.allCoverage ?? 0) !== 1) failures.push(`${run}: source information coverage is incomplete`);
   if ((manifest.quality?.visibleSemantics?.visibleHeadlineCount ?? 0) !== (manifest.quality?.visibleSemantics?.sourceNodeCount ?? -1)) failures.push(`${run}: final SVG does not visibly preserve every headline`);
   if ((manifest.quality?.readability?.minimumFontSize ?? 0) < 16) failures.push(`${run}: final SVG uses text below 16px`);
+  if ((manifest.quality?.layoutContainment?.boundedSourceGroups ?? 0) !== (manifest.quality?.visibleSemantics?.sourceNodeCount ?? -1)) failures.push(`${run}: not every semantic node declares a layout container`);
+  if ((manifest.quality?.layoutContainment?.checkedTextNodes ?? 0) < (manifest.quality?.visibleSemantics?.sourceNodeCount ?? 0)) failures.push(`${run}: layout containment did not inspect every semantic node`);
   if ((manifest.quality?.preview?.aspectRatio ?? 0) < 1.4) failures.push(`${run}: preview is too tall`);
   if ((manifest.quality?.semantics?.grammarCount ?? 0) < 1) failures.push(`${run}: no visual grammar was selected`);
 }

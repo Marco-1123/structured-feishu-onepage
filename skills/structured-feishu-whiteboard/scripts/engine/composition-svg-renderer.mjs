@@ -1,4 +1,4 @@
-const MAX_W = 4500;
+const MAX_W = 4800;
 const MIN_W = 2600;
 const PAGE_MARGIN = 120;
 const COLORS = {
@@ -47,9 +47,10 @@ function centeredMultiline(x, y, value, width, size = 16, color = COLORS.seconda
   return wrap(value, width, readableSize, maxLines).map((item, index) => t(x, y + index * readableSize * lineHeight, item, readableSize, color, weight, "middle")).join("");
 }
 
-function sourceGroup(nodeOrId, markup) {
+function sourceGroup(nodeOrId, markup, bounds = null) {
   const id = typeof nodeOrId === "string" ? nodeOrId : nodeOrId?.id;
-  return id ? `<g data-source-node-id="${esc(id)}">${markup}</g>` : markup;
+  const layout = bounds ? ` data-layout-bounds="${[bounds.x, bounds.y, bounds.width, bounds.height].map((value) => Number(value).toFixed(2)).join(",")}"` : "";
+  return id ? `<g data-source-node-id="${esc(id)}"${layout}>${markup}</g>` : markup;
 }
 
 function rect(x, y, width, height, fill = COLORS.surface, stroke = COLORS.border, radius = 14, sw = 2) {
@@ -76,19 +77,19 @@ function renderMetricBand(unit, x, y, width, height) {
   const gap = 18;
   const primary = unit.nodes.slice(0, unit.primaryCount || 5);
   const secondary = unit.nodes.slice(primary.length);
-  const cardHeight = secondary.length ? height - 54 : height;
+  const cardHeight = secondary.length ? height - 90 : height;
   const cardW = (width - gap * (primary.length - 1)) / primary.length;
   let out = primary.map((node, index) => {
     const cx = x + index * (cardW + gap);
-    return sourceGroup(node, `${rect(cx, y, cardW, cardHeight, COLORS.surface)}${t(cx + 26, y + 40, node.headline, 20, COLORS.secondary, 600)}${t(cx + 26, y + 101, node.measure?.display || node.detail || "", 43, COLORS.blue2, 750)}${multiline(cx + 26, y + 139, node.detail || "", cardW - 52, 17, COLORS.secondary, 400, 2)}${rect(cx + 26, y + cardHeight - 40, 112, 28, COLORS.blueSoft, COLORS.blueSoft, 6, 1)}${t(cx + 82, y + cardHeight - 19, node.measure?.direction === "down" ? "效率改善" : "阶段结果", 16, COLORS.blue, 700, "middle")}`);
+    return sourceGroup(node, `${rect(cx, y, cardW, cardHeight, COLORS.surface)}${t(cx + 26, y + 40, node.headline, 20, COLORS.secondary, 600)}${t(cx + 26, y + 101, node.measure?.display || node.detail || "", 43, COLORS.blue2, 750)}${multiline(cx + 26, y + 139, node.detail || "", cardW - 52, 17, COLORS.secondary, 400, 2)}${rect(cx + 26, y + cardHeight - 40, 112, 28, COLORS.blueSoft, COLORS.blueSoft, 6, 1)}${t(cx + 82, y + cardHeight - 19, node.measure?.direction === "down" ? "效率改善" : "阶段结果", 16, COLORS.blue, 700, "middle")}`, { x: cx, y, width: cardW, height: cardHeight });
   }).join("");
   if (secondary.length) {
     const miniGap = 10;
     const miniW = (width - miniGap * (secondary.length - 1)) / secondary.length;
     secondary.forEach((node, index) => {
       const cx = x + index * (miniW + miniGap);
-      const summary = [node.headline, node.measure?.display, node.detail].filter(Boolean).join("｜");
-      out += sourceGroup(node, `${rect(cx, y + height - 68, miniW, 68, index < 2 ? COLORS.blueSoft : "#F8FAFC", COLORS.border, 7, 1)}${centeredMultiline(cx + miniW / 2, y + height - 39, summary, miniW - 18, 16, index < 2 ? COLORS.blue2 : COLORS.secondary, 650, 2)}`);
+      const summary = [...new Set([node.headline, node.measure?.display, node.detail].filter(Boolean))].join("｜");
+      out += sourceGroup(node, `${rect(cx, y + height - 78, miniW, 78, index < 2 ? COLORS.blueSoft : "#F8FAFC", COLORS.border, 7, 1)}${centeredMultiline(cx + miniW / 2, y + height - 47, summary, miniW - 24, 16, index < 2 ? COLORS.blue2 : COLORS.secondary, 650, 2)}`, { x: cx, y: y + height - 78, width: miniW, height: 78 });
     });
   }
   return out;
@@ -111,7 +112,7 @@ function renderTrend(unit, x, y, width, height) {
   });
   out += `<polyline points="${points.map((p) => `${p.px},${p.py}`).join(" ")}" fill="none" stroke="${COLORS.blue2}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;
   for (const point of points) out += `<circle cx="${point.px}" cy="${point.py}" r="8" fill="${COLORS.surface}" stroke="${COLORS.blue2}" stroke-width="5"/>${t(point.px, point.py - 18, point.display, 16, COLORS.ink, 700, "middle")}${t(point.px, bottom + 28, point.label, 16, COLORS.secondary, 600, "middle")}`;
-  return sourceGroup(node, out);
+  return sourceGroup(node, out, { x, y, width, height });
 }
 
 function renderProcess(unit, x, y, width, height) {
@@ -123,7 +124,7 @@ function renderProcess(unit, x, y, width, height) {
   unit.nodes.forEach((node, index) => {
     const cx = x + 34 + index * (cardW + gap);
     const warning = node.status === "warning" || node.status === "risk";
-    out += sourceGroup(node, `${rect(cx, cy, cardW, height - 142, warning ? COLORS.amberSoft : COLORS.blueSoft, warning ? COLORS.amber : COLORS.border, 12, 2)}${t(cx + 22, cy + 40, String(index + 1).padStart(2, "0"), 17, warning ? COLORS.amber : COLORS.blue, 750)}${multiline(cx + 22, cy + 78, node.headline, cardW - 44, 23, COLORS.ink, 700, 2)}${multiline(cx + 22, cy + 134, node.detail || "", cardW - 44, 16, COLORS.secondary, 400, 3)}`);
+    out += sourceGroup(node, `${rect(cx, cy, cardW, height - 142, warning ? COLORS.amberSoft : COLORS.blueSoft, warning ? COLORS.amber : COLORS.border, 12, 2)}${t(cx + 22, cy + 40, String(index + 1).padStart(2, "0"), 17, warning ? COLORS.amber : COLORS.blue, 750)}${multiline(cx + 22, cy + 78, node.headline, cardW - 44, 23, COLORS.ink, 700, 2)}${multiline(cx + 22, cy + 134, node.detail || "", cardW - 44, 16, COLORS.secondary, 400, 3)}`, { x: cx, y: cy, width: cardW, height: height - 142 });
     if (index < count - 1) out += arrow(cx + cardW + 8, cy + (height - 142) / 2, cx + cardW + gap - 8);
   });
   return out;
@@ -136,7 +137,7 @@ function renderLayers(unit, x, y, width, height) {
   unit.nodes.forEach((node, index) => {
     const yy = start + index * h;
     const warn = node.status === "warning";
-    out += sourceGroup(node, `${rect(x + 34 + index * 10, yy, width - 68 - index * 20, h - 9, warn ? COLORS.amberSoft : index % 2 ? "#F7F9FC" : COLORS.blueSoft, warn ? COLORS.amber : COLORS.border, 8, 1.5)}${t(x + 55 + index * 10, yy + 30, node.headline, 19, COLORS.ink, 700)}${multiline(x + 210 + index * 10, yy + 30, node.detail || "", width - 285 - index * 20, 16, COLORS.secondary, 400, 2)}`);
+    out += sourceGroup(node, `${rect(x + 34 + index * 10, yy, width - 68 - index * 20, h - 9, warn ? COLORS.amberSoft : index % 2 ? "#F7F9FC" : COLORS.blueSoft, warn ? COLORS.amber : COLORS.border, 8, 1.5)}${t(x + 55 + index * 10, yy + 30, node.headline, 19, COLORS.ink, 700)}${multiline(x + 210 + index * 10, yy + 30, node.detail || "", width - 285 - index * 20, 16, COLORS.secondary, 400, 2)}`, { x: x + 34 + index * 10, y: yy, width: width - 68 - index * 20, height: h - 9 });
   });
   return out;
 }
@@ -148,7 +149,7 @@ function renderMaturity(unit, x, y, width, height) {
   unit.nodes.forEach((node, index) => {
     const level = Number((node.headline.match(/L([1-5])/i) || [0, 2])[1]);
     const yy = start + index * rowH;
-    out += sourceGroup(node, `${t(x + 34, yy + 22, node.headline, 18, COLORS.ink, 700)}${rect(x + 210, yy + 3, width - 254, 20, COLORS.grid, COLORS.grid, 10, 1)}${rect(x + 210, yy + 3, (width - 254) * (level / 5), 20, level <= 2 ? COLORS.amber : COLORS.blue2, level <= 2 ? COLORS.amber : COLORS.blue2, 10, 1)}${multiline(x + 34, yy + 52, node.detail || "", width - 68, 16, COLORS.secondary, 400, 1)}`);
+    out += sourceGroup(node, `${t(x + 34, yy + 22, node.headline, 18, COLORS.ink, 700)}${rect(x + 210, yy + 3, width - 254, 20, COLORS.grid, COLORS.grid, 10, 1)}${rect(x + 210, yy + 3, (width - 254) * (level / 5), 20, level <= 2 ? COLORS.amber : COLORS.blue2, level <= 2 ? COLORS.amber : COLORS.blue2, 10, 1)}${multiline(x + 34, yy + 52, node.detail || "", width - 68, 16, COLORS.secondary, 400, 1)}`, { x: x + 28, y: yy, width: width - 56, height: rowH });
   });
   return out;
 }
@@ -180,7 +181,7 @@ function renderEvidenceDashboard(unit, x, y, width, height) {
     const cy = y + 102 + Math.floor(index / cols) * (cardH + gap);
     const values = numericTokens(nodeText(node));
     const metric = node.measure?.display || (values.length ? String(values[0]) : "依据");
-    out += sourceGroup(node, `${rect(cx, cy, cardW, cardH, index === 0 ? COLORS.blueSoft : "#F8FAFC", COLORS.border, 9, 1)}${t(cx + 15, cy + 31, metric, 22, index === 0 ? COLORS.blue2 : COLORS.ink, 750)}${multiline(cx + 15, cy + 57, node.headline, cardW - 30, 16, COLORS.ink, 650, 2)}${multiline(cx + 15, cy + 82, node.detail || "", cardW - 30, 16, COLORS.secondary, 400, 2)}`);
+    out += sourceGroup(node, `${rect(cx, cy, cardW, cardH, index === 0 ? COLORS.blueSoft : "#F8FAFC", COLORS.border, 9, 1)}${t(cx + 15, cy + 31, metric, 22, index === 0 ? COLORS.blue2 : COLORS.ink, 750)}${multiline(cx + 15, cy + 57, node.headline, cardW - 30, 16, COLORS.ink, 650, 2)}${multiline(cx + 15, cy + 82, node.detail || "", cardW - 30, 16, COLORS.secondary, 400, 2)}`, { x: cx, y: cy, width: cardW, height: cardH });
   });
   const distribution = unit.values || [];
   const colors = [COLORS.blue2, "#7B8BE8", COLORS.amber, "#C69673", COLORS.green];
@@ -217,7 +218,7 @@ function renderStacked(unit, x, y, width, height) {
     const yy = y + 210 + index * 34;
     out += `<circle cx="${x + 43}" cy="${yy - 6}" r="7" fill="${colors[index]}"/>${t(x + 62, yy, `${labels[index]} ${value}%`, 16, COLORS.ink, 600)}`;
   });
-  return sourceGroup(unit.nodes[0], out);
+  return sourceGroup(unit.nodes[0], out, { x, y, width, height });
 }
 
 function renderOptions(unit, x, y, width, height) {
@@ -228,7 +229,7 @@ function renderOptions(unit, x, y, width, height) {
     const yy = start + index * rowH;
     const chosen = node.recommended === true;
     const recommendation = chosen ? `${rect(x + width - 116, yy + 17, 66, 28, COLORS.blue, COLORS.blue, 6, 1)}${t(x + width - 83, yy + 38, "推荐", 16, "#FFFFFF", 700, "middle")}` : "";
-    out += sourceGroup(node, `${rect(x + 34, yy, width - 68, rowH - 12, chosen ? COLORS.blueSoft : "#F8FAFC", chosen ? COLORS.blue : COLORS.border, 10, chosen ? 2.5 : 1.5)}${rect(x + 52, yy + 18, 58, 28, chosen ? COLORS.blue : COLORS.grid, chosen ? COLORS.blue : COLORS.grid, 6, 1)}${t(x + 81, yy + 39, String.fromCharCode(65 + index), 16, chosen ? "#FFFFFF" : COLORS.secondary, 750, "middle")}${multiline(x + 128, yy + 34, node.headline, width * 0.38, 19, COLORS.ink, 700, 2)}${multiline(x + width * 0.50, yy + 34, node.detail || "", width * 0.38, 16, COLORS.secondary, 400, 2)}${recommendation}`);
+    out += sourceGroup(node, `${rect(x + 34, yy, width - 68, rowH - 12, chosen ? COLORS.blueSoft : "#F8FAFC", chosen ? COLORS.blue : COLORS.border, 10, chosen ? 2.5 : 1.5)}${rect(x + 52, yy + 18, 58, 28, chosen ? COLORS.blue : COLORS.grid, chosen ? COLORS.blue : COLORS.grid, 6, 1)}${t(x + 81, yy + 39, String.fromCharCode(65 + index), 16, chosen ? "#FFFFFF" : COLORS.secondary, 750, "middle")}${multiline(x + 128, yy + 34, node.headline, width * 0.38, 19, COLORS.ink, 700, 2)}${multiline(x + width * 0.50, yy + 34, node.detail || "", width * 0.38, 16, COLORS.secondary, 400, 2)}${recommendation}`, { x: x + 34, y: yy, width: width - 68, height: rowH - 12 });
   });
   return out;
 }
@@ -248,7 +249,7 @@ function renderRisk(unit, x, y, width, height) {
       + multiline(x + 84, top + 78, pair.risk, hasControl ? split - x - 112 : width - 150, 21, COLORS.ink, 750, 2)
       + multiline(x + 84, top + 133, pair.detail || "", hasControl ? split - x - 112 : width - 150, 16, COLORS.secondary, 400, 3)
       + (hasControl ? `${line(split, top + 24, split, top + innerHeight - 24, COLORS.border, 2)}${t(split + 28, top + 52, "控制措施", 16, color, 700)}${multiline(split + 28, top + 88, pair.control, x + width - split - 72, 18, COLORS.secondary, 500, 3)}` : "");
-    return out + sourceGroup(pair.sourceNodeId, markup);
+    return out + sourceGroup(pair.sourceNodeId, markup, { x: x + 34, y: top, width: width - 68, height: innerHeight });
   }
   const start = y + 104;
   const cols = unit.pairs.length > 4 ? 2 : 1;
@@ -262,7 +263,7 @@ function renderRisk(unit, x, y, width, height) {
     const color = pair.severity === "high" ? COLORS.amber : COLORS.blue2;
     const label = pair.type === "decision" ? "待决策" : pair.severity === "high" ? "高风险" : "风险";
     const supporting = [pair.detail, pair.control ? `控制措施：${pair.control}` : ""].filter(Boolean).join("｜");
-    out += sourceGroup(pair.sourceNodeId, `${rect(cx, yy, cardW, rowH, pair.severity === "high" ? COLORS.amberSoft : "#F8FAFC", COLORS.border, 9, 1)}<circle cx="${cx + 22}" cy="${yy + 27}" r="6" fill="${color}"/>${t(cx + 39, yy + 32, label, 16, color, 700)}${multiline(cx + 18, yy + 67, pair.risk, cardW - 36, 16, COLORS.ink, 700, 2)}${multiline(cx + 18, yy + 108, supporting, cardW - 36, 16, COLORS.secondary, 400, 3)}`);
+    out += sourceGroup(pair.sourceNodeId, `${rect(cx, yy, cardW, rowH, pair.severity === "high" ? COLORS.amberSoft : "#F8FAFC", COLORS.border, 9, 1)}<circle cx="${cx + 22}" cy="${yy + 27}" r="6" fill="${color}"/>${t(cx + 39, yy + 32, label, 16, color, 700)}${multiline(cx + 112, yy + 32, pair.risk, cardW - 132, 16, COLORS.ink, 700, 2)}${multiline(cx + 18, yy + 72, supporting, cardW - 36, 16, COLORS.secondary, 400, 2)}`, { x: cx, y: yy, width: cardW, height: rowH });
   });
   return out;
 }
@@ -287,7 +288,7 @@ function renderInsightCluster(unit, x, y, width, height) {
       const rowH = (cardH - 61 - rowGap * (entry.nodes.length - 1)) / entry.nodes.length;
       entry.nodes.forEach((item, itemIndex) => {
         const yy = rowTop + itemIndex * (rowH + rowGap);
-        out += sourceGroup(item, `${rect(cx + 16, yy, cardW - 32, rowH, itemIndex === 0 ? COLORS.surface : "#F8FAFC", COLORS.border, 7, 1)}${multiline(cx + 28, yy + 26, item.headline, cardW * 0.42, 16, COLORS.ink, 700, 2)}${multiline(cx + cardW * 0.48, yy + 26, item.detail || "", cardW * 0.46, 16, COLORS.secondary, 400, 2)}`);
+        out += sourceGroup(item, `${rect(cx + 16, yy, cardW - 32, rowH, itemIndex === 0 ? COLORS.surface : "#F8FAFC", COLORS.border, 7, 1)}${multiline(cx + 28, yy + 26, item.headline, cardW * 0.42, 16, COLORS.ink, 700, 2)}${multiline(cx + cardW * 0.48, yy + 26, item.detail || "", cardW * 0.46, 16, COLORS.secondary, 400, 2)}`, { x: cx + 16, y: yy, width: cardW - 32, height: rowH });
       });
       return;
     } else if (entry.type === "maturity-bars") {
@@ -308,7 +309,7 @@ function renderInsightCluster(unit, x, y, width, height) {
       markup += multiline(cx + 20, top + 119, node.detail || "", cardW - 40, 16, COLORS.secondary, 500, 2);
       markup += rect(cx + 20, top + cardH - 24, Math.max(80, cardW * 0.36), 6, accent, accent, 3, 0);
     }
-    out += sourceGroup(node, markup);
+    out += sourceGroup(node, markup, { x: cx, y: top, width: cardW, height: cardH });
   });
   return out;
 }
@@ -321,7 +322,7 @@ function renderCause(unit, x, y, width, height) {
   unit.nodes.forEach((node, index) => {
     const cx = x + 34 + (index % cols) * (cardW + gap);
     const cy = y + 102 + Math.floor(index / cols) * (cardH + gap);
-    out += sourceGroup(node, `${rect(cx, cy, cardW, cardH, "#F8FAFC", COLORS.border, 9, 1.5)}<circle cx="${cx + 25}" cy="${cy + 27}" r="7" fill="${node.status === "warning" ? COLORS.amber : COLORS.blue2}"/>${multiline(cx + 44, cy + 32, node.headline, cardW - 62, 18, COLORS.ink, 700, 2)}${multiline(cx + 20, cy + 82, node.detail || "", cardW - 40, 16, COLORS.secondary, 400, 3)}`);
+    out += sourceGroup(node, `${rect(cx, cy, cardW, cardH, "#F8FAFC", COLORS.border, 9, 1.5)}<circle cx="${cx + 25}" cy="${cy + 27}" r="7" fill="${node.status === "warning" ? COLORS.amber : COLORS.blue2}"/>${multiline(cx + 44, cy + 32, node.headline, cardW - 62, 18, COLORS.ink, 700, 2)}${multiline(cx + 20, cy + 82, node.detail || "", cardW - 40, 16, COLORS.secondary, 400, 3)}`, { x: cx, y: cy, width: cardW, height: cardH });
   });
   return out;
 }
@@ -333,7 +334,8 @@ function renderRoadmap(unit, x, y, width, height) {
   out += line(left, cy, right, cy, COLORS.blue2, 5);
   unit.nodes.forEach((node, index) => {
     const px = left + index * ((right - left) / Math.max(1, n - 1));
-    out += sourceGroup(node, `<circle cx="${px}" cy="${cy}" r="13" fill="${COLORS.surface}" stroke="${COLORS.blue2}" stroke-width="6"/>${centeredMultiline(px, cy - 38, node.headline, Math.max(210, (right - left) / n - 30), 16, COLORS.ink, 700, 2)}${centeredMultiline(px, cy + 50, node.detail || "", Math.max(210, (right - left) / n - 30), 16, COLORS.secondary, 400, 2)}`);
+    const nodeWidth = Math.max(210, (right - left) / n - 30);
+    out += sourceGroup(node, `<circle cx="${px}" cy="${cy}" r="13" fill="${COLORS.surface}" stroke="${COLORS.blue2}" stroke-width="6"/>${centeredMultiline(px, cy - 38, node.headline, nodeWidth, 16, COLORS.ink, 700, 2)}${centeredMultiline(px, cy + 50, node.detail || "", nodeWidth, 16, COLORS.secondary, 400, 2)}`, { x: px - nodeWidth / 2, y: cy - 82, width: nodeWidth, height: 154 });
   });
   return out;
 }
@@ -351,7 +353,7 @@ function renderList(unit, x, y, width, height, numbered = false) {
       } else nodeMarkup += `<circle cx="${cx + 23}" cy="${y + 128}" r="6" fill="${COLORS.blue2}"/>`;
       nodeMarkup += multiline(cx + 48, y + 129, node.headline, cardW - 70, 16, COLORS.ink, 700, 2);
       nodeMarkup += multiline(cx + 20, y + 180, node.detail || "", cardW - 40, 16, COLORS.secondary, 400, 2);
-      out += sourceGroup(node, nodeMarkup);
+      out += sourceGroup(node, nodeMarkup, { x: cx, y: y + 101, width: cardW, height: height - 126 });
     });
     return out;
   }
@@ -365,7 +367,7 @@ function renderList(unit, x, y, width, height, numbered = false) {
     } else nodeMarkup += `<circle cx="${x + 56}" cy="${yy + 27}" r="6" fill="${COLORS.blue2}"/>`;
     nodeMarkup += multiline(x + 82, yy + 27, node.headline, width - 140, 16, COLORS.ink, 700, 1);
     nodeMarkup += multiline(x + 82, yy + 50, node.detail || "", width - 140, 16, COLORS.secondary, 400, 1);
-    out += sourceGroup(node, nodeMarkup);
+    out += sourceGroup(node, nodeMarkup, { x: x + 34, y: yy, width: width - 68, height: rowH - 9 });
   });
   return out;
 }
@@ -377,7 +379,7 @@ function renderOutcomeGrid(unit, x, y, width, height) {
   unit.nodes.forEach((node, index) => {
     const cx = x + 34 + (index % cols) * (cardW + gap);
     const cy = y + 102 + Math.floor(index / cols) * (cardH + gap);
-    out += sourceGroup(node, `${rect(cx, cy, cardW, cardH, index < 2 ? COLORS.blueSoft : "#F8FAFC", COLORS.border, 8, 1)}${t(cx + 18, cy + 32, node.measure?.display || node.headline, node.measure?.display ? 22 : 16, index < 2 ? COLORS.blue2 : COLORS.ink, 750)}${multiline(cx + 18, cy + 60, node.headline, cardW - 36, 16, COLORS.secondary, 500, 2)}`);
+    out += sourceGroup(node, `${rect(cx, cy, cardW, cardH, index < 2 ? COLORS.blueSoft : "#F8FAFC", COLORS.border, 8, 1)}${t(cx + 18, cy + 32, node.measure?.display || node.headline, node.measure?.display ? 22 : 16, index < 2 ? COLORS.blue2 : COLORS.ink, 750)}${multiline(cx + 18, cy + 60, node.headline, cardW - 36, 16, COLORS.secondary, 500, 2)}`, { x: cx, y: cy, width: cardW, height: cardH });
   });
   return out;
 }
@@ -441,7 +443,7 @@ export function renderCompositionToSvg(composition) {
   body += rect(PAGE_MARGIN, 205, contentWidth, 190, COLORS.surface, COLORS.border, 14, 2);
   body += `<rect x="120" y="205" width="12" height="190" rx="6" fill="${COLORS.blue2}"/>`;
   body += t(165, 250, "核心判断", 19, COLORS.blue2, 750);
-  body += sourceGroup(composition.thesis, `${multiline(165, 302, composition.thesis.headline, contentWidth - 100, 30, COLORS.ink, 750, 2)}${composition.thesis.detail ? multiline(165, 365, composition.thesis.detail, contentWidth - 100, 17, COLORS.secondary, 400, 1) : ""}`);
+  body += sourceGroup(composition.thesis, `${multiline(165, 302, composition.thesis.headline, contentWidth - 100, 30, COLORS.ink, 750, 2)}${composition.thesis.detail ? multiline(165, 365, composition.thesis.detail, contentWidth - 100, 17, COLORS.secondary, 400, 1) : ""}`, { x: 145, y: 225, width: contentWidth - 70, height: 150 });
   body += metricMarkup;
   for (const position of packed.positions) body += renderUnit(position.unit, position.x, position.y, position.width, position.height);
   body += t(120, height - 34, `信息覆盖 ${composition.sourceNodeIds.length} 个语义节点 · ${composition.grammarTypes.length} 种图形语法 · 自动构图`, 16, COLORS.secondary, 500);

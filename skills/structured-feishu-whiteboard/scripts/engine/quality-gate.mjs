@@ -29,11 +29,22 @@ function visibleText(markup) {
     .join(" ");
 }
 
+function sourceGroups(svg) {
+  return [...String(svg).matchAll(/<g\b([^>]*\bdata-source-node-id="([^"]+)"[^>]*)>([\s\S]*?)<\/g>/g)]
+    .map((match) => ({ attributes: match[1], id: decodeXml(match[2]), markup: match[3] }));
+}
+
+function attribute(attributes, name) {
+  return String(attributes || "").match(new RegExp(`\\b${name}="([^"]+)"`))?.[1];
+}
+
+function estimatedTextWidth(value, size) {
+  return [...String(value || "")].reduce((sum, char) => sum + (/[^\x00-\xff]/.test(char) ? size : size * 0.56), 0);
+}
+
 export function validateSvgSemantics(svg, graph) {
   const groups = new Map();
-  for (const match of String(svg).matchAll(/<g\s+data-source-node-id="([^"]+)">([\s\S]*?)<\/g>/g)) {
-    groups.set(decodeXml(match[1]), visibleText(match[2]));
-  }
+  for (const group of sourceGroups(svg)) groups.set(group.id, visibleText(group.markup));
   const missingGroups = [];
   const missingHeadlines = [];
   const missingFields = [];
@@ -72,6 +83,44 @@ export function validateSvgSemantics(svg, graph) {
       missingNumericClaims
     }
   };
+}
+
+export function validateSvgLayoutContainment(svg) {
+  const issues = [];
+  let checkedTextNodes = 0;
+  const tolerance = 3;
+  for (const group of sourceGroups(svg)) {
+    const encodedBounds = attribute(group.attributes, "data-layout-bounds");
+    if (!encodedBounds) {
+      issues.push(`source node ${group.id} has no declared layout bounds`);
+      continue;
+    }
+    const [x, y, width, height] = encodedBounds.split(",").map(Number);
+    if (![x, y, width, height].every(Number.isFinite) || width <= 0 || height <= 0) {
+      issues.push(`source node ${group.id} has invalid layout bounds: ${encodedBounds}`);
+      continue;
+    }
+    const left = x - tolerance, top = y - tolerance, right = x + width + tolerance, bottom = y + height + tolerance;
+    for (const match of group.markup.matchAll(/<text\b([^>]*)>([\s\S]*?)<\/text>/g)) {
+      const attrs = match[1];
+      const tx = Number(attribute(attrs, "x"));
+      const baseline = Number(attribute(attrs, "y"));
+      const size = Number(attribute(attrs, "font-size"));
+      const anchor = attribute(attrs, "text-anchor") || "start";
+      const value = decodeXml(match[2]).replace(/<[^>]+>/g, "");
+      if (![tx, baseline, size].every(Number.isFinite)) continue;
+      checkedTextNodes += 1;
+      const textWidth = estimatedTextWidth(value, size);
+      const textLeft = anchor === "middle" ? tx - textWidth / 2 : anchor === "end" ? tx - textWidth : tx;
+      const textRight = anchor === "middle" ? tx + textWidth / 2 : anchor === "end" ? tx : tx + textWidth;
+      const textTop = baseline - size * 0.9;
+      const textBottom = baseline + size * 0.25;
+      if (textLeft < left || textRight > right || textTop < top || textBottom > bottom) {
+        issues.push(`source node ${group.id} renders text outside its container: "${value}"`);
+      }
+    }
+  }
+  return { issues, metrics: { boundedSourceGroups: sourceGroups(svg).length, checkedTextNodes } };
 }
 
 export function validateSvgReadability(svg) {

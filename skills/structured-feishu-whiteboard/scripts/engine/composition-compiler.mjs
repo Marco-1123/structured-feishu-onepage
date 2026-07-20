@@ -152,7 +152,9 @@ export function compileComposition(graph) {
   const governanceNodes = [...riskNodes, ...decisions];
   if (governanceNodes.length) add(unit("risk-control", "风险、控制与待决策", governanceNodes, {
     span: optionNodes.length >= 3 ? 4 : optionNodes.length ? 6 : governanceNodes.length >= 2 ? 12 : 8,
-    height: governanceNodes.length > 4 ? 380 : 340,
+    height: governanceNodes.length > 4
+      ? 128 + Math.ceil(governanceNodes.length / 2) * 102 + (Math.ceil(governanceNodes.length / 2) - 1) * 10
+      : 340,
     pairs: [
       ...riskNodes.map(splitRisk),
       ...decisions.map((node) => ({ sourceNodeId: node.id, type: "decision", risk: node.headline, detail: node.detail || "", severity: "medium", control: "" }))
@@ -178,6 +180,7 @@ export function compileComposition(graph) {
     use(remainingMetrics);
     metricUnit.nodes.push(...remainingMetrics);
     metricUnit.sourceNodeIds.push(...remainingMetrics.map((node) => node.id));
+    metricUnit.height = Math.max(metricUnit.height, 305);
   }
 
   const remainingEvidence = take((node) => ["evidence", "context", "criterion", "actor"].includes(node.kind));

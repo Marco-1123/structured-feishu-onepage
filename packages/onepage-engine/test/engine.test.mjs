@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { validateContentGraph } from "../../../skills/structured-feishu-whiteboard/scripts/engine/validate.mjs";
 import { compileComposition } from "../../../skills/structured-feishu-whiteboard/scripts/engine/composition-compiler.mjs";
 import { renderCompositionToSvg } from "../../../skills/structured-feishu-whiteboard/scripts/engine/composition-svg-renderer.mjs";
-import { buildCompositionCoverage, validateCompositionQuality, validateSourceGrounding, validateSvgReadability, validateSvgSemantics } from "../../../skills/structured-feishu-whiteboard/scripts/engine/quality-gate.mjs";
+import { buildCompositionCoverage, validateCompositionQuality, validateSourceGrounding, validateSvgLayoutContainment, validateSvgReadability, validateSvgSemantics } from "../../../skills/structured-feishu-whiteboard/scripts/engine/quality-gate.mjs";
 import { buildDraftTemplate, buildExtractionPacket, sealDraft, verifySealedGraph } from "../../../skills/structured-feishu-whiteboard/scripts/engine/extraction.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -71,7 +71,13 @@ test("diverse corpus compiles through the single composition path", () => {
     const svg = renderCompositionToSvg(composition);
     assert.deepEqual(validateSvgSemantics(svg, item).issues, [], name);
     assert.deepEqual(validateSvgReadability(svg).issues, [], name);
+    assert.deepEqual(validateSvgLayoutContainment(svg).issues, [], name);
   }
+});
+
+test("layout containment gate rejects text that escapes its owning card", () => {
+  const svg = '<svg><g data-source-node-id="n1" data-layout-bounds="0,0,100,60"><text x="20" y="90" font-size="16">越界文字</text></g></svg>';
+  assert.match(validateSvgLayoutContainment(svg).issues.join("\n"), /outside its container/);
 });
 
 test("renderer never invents a recommendation from option order", () => {
@@ -79,7 +85,7 @@ test("renderer never invents a recommendation from option order", () => {
   const options = item.nodes.filter((node) => node.kind === "option");
   options[1].recommended = true;
   const svg = renderCompositionToSvg(compileComposition(item));
-  const group = (id) => svg.match(new RegExp(`<g data-source-node-id="${id}">([\\s\\S]*?)<\\/g>`))?.[1] || "";
+  const group = (id) => svg.match(new RegExp(`<g data-source-node-id="${id}"[^>]*>([\\s\\S]*?)<\\/g>`))?.[1] || "";
   assert.doesNotMatch(group(options[0].id), /stroke="#3370FF"[^>]*stroke-width="2.5"/);
   assert.match(group(options[1].id), /stroke="#3370FF"[^>]*stroke-width="2.5"/);
 });
@@ -95,7 +101,7 @@ test("risk rendering preserves the source risk and explicit control as separate 
   assert.equal(pair.risk, risk.headline);
   assert.equal(pair.control, risk.control);
   const svg = renderCompositionToSvg(composition);
-  const group = svg.match(new RegExp(`<g data-source-node-id="${risk.id}">([\\s\\S]*?)<\\/g>`))?.[1] || "";
+  const group = svg.match(new RegExp(`<g data-source-node-id="${risk.id}"[^>]*>([\\s\\S]*?)<\\/g>`))?.[1] || "";
   assert.match(group, new RegExp(risk.headline));
   assert.match(group, /控制措施：保留双口径对照 8 周/);
 });
@@ -172,8 +178,8 @@ test("risk without control and unresolved decisions keep their original semantic
     { id: "u-decision", kind: "unresolved", headline: "部署方式待定", detail: "需要架构委员会确认", importance: "medium", sourceQuote: "部署方式待定", sourceUnitIds: [item.sourceDecisions[0].unitId] }
   );
   const svg = renderCompositionToSvg(compileComposition(item));
-  const risk = svg.match(/<g data-source-node-id="r-no-control">([\s\S]*?)<\/g>/)?.[1] || "";
-  const decision = svg.match(/<g data-source-node-id="u-decision">([\s\S]*?)<\/g>/)?.[1] || "";
+  const risk = svg.match(/<g data-source-node-id="r-no-control"[^>]*>([\s\S]*?)<\/g>/)?.[1] || "";
+  const decision = svg.match(/<g data-source-node-id="u-decision"[^>]*>([\s\S]*?)<\/g>/)?.[1] || "";
   assert.match(risk, /可能影响联调窗口/);
   assert.doesNotMatch(risk, /控制措施/);
   assert.match(decision, /待决策/);

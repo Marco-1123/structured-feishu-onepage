@@ -12,6 +12,7 @@ import {
   validateCompositionQuality,
   validatePreview,
   validateSourceGrounding,
+  validateSvgLayoutContainment,
   validateSvgReadability,
   validateSvgSemantics
 } from "./quality-gate.mjs";
@@ -60,13 +61,15 @@ const manifest = {
 const semanticGate = validateCompositionQuality(composition, graph);
 const visibleSemanticGate = validateSvgSemantics(svg, graph);
 const readabilityGate = validateSvgReadability(svg);
+const containmentGate = validateSvgLayoutContainment(svg);
 manifest.quality = {
   semantics: semanticGate.metrics,
   visibleSemantics: visibleSemanticGate.metrics,
   readability: readabilityGate.metrics,
+  layoutContainment: containmentGate.metrics,
   coverage: buildCompositionCoverage(composition, graph)
 };
-const issues = [...semanticGate.issues, ...visibleSemanticGate.issues, ...readabilityGate.issues];
+const issues = [...semanticGate.issues, ...visibleSemanticGate.issues, ...readabilityGate.issues, ...containmentGate.issues];
 
 if (!skipRender) {
   const render = spawnSync("npx", ["-y", "@larksuite/whiteboard-cli@0.2.12", "-i", svgPath, "-o", previewPath, "-s", "1"], { encoding: "utf8" });

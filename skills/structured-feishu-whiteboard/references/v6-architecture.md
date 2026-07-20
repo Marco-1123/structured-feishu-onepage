@@ -38,3 +38,9 @@ Coverage is measured at the final visible layer, not at assignment time. The
 renderer is prohibited from inventing recommendations, severity, controls or
 generic substitute claims. A release candidate must pass both local geometry
 checks and a Feishu-side raw/image export review.
+
+Each source-linked SVG group also records its intended layout rectangle. The
+containment gate estimates every rendered text box against that rectangle and
+blocks output when text crosses a card boundary. This closes the gap left by
+native overlap checks, which can report success even when a text node visibly
+escapes its semantic container.

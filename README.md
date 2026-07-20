@@ -30,7 +30,10 @@ The validation uses seven source structures spanning capability overviews,
 operating reviews, processes, strategy proposals, decisions, project plans and
 a 53-node complex review. Every result must pass source grounding, final-SVG
 visible-content coverage, semantic composition, readability, aspect-ratio and
-native whiteboard overflow/overlap checks.
+native whiteboard overflow/overlap checks. The renderer additionally declares
+an owning rectangle for every semantic node; validation rejects text that
+escapes that rectangle even when the native whiteboard checker reports no
+overlap.
 
 For a real Feishu release candidate, export the board back as raw nodes and run:
 
